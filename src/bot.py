@@ -34,9 +34,9 @@ class ChisBot(commands.Bot):
 bot = ChisBot()
 
 @bot.command()
-async def hi(ctx):
-    logging.info(f'said hello to {ctx.author.display_name}')
-    await ctx.send('Sup, chad ;)')
+async def hi(message):
+    logging.info(f'said hello to {message.author.display_name}')
+    await message.send('Sup, chad ;)')
 
 if not os.path.exists('token.txt'):
     print('Token file not found. Place your Discord token ID in a file called `token.txt`.', file=sys.stderr)
