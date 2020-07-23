@@ -30,13 +30,11 @@ class ChisBot(commands.Bot):
     async def on_ready(self):
         logging.info(f'Logged in as "{self.user}".')
 
-
 bot = ChisBot()
 
-@bot.command()
-async def hi(message):
-    logging.info(f'said hello to {message.author.display_name}')
-    await message.send('Sup, chad ;)')
+extensions = ['cogs.SimpleCommands', 'cogs.GameCommands', 'cogs.HelpCommands']
+for ext in extensions:
+    bot.load_extension(ext)
 
 if not os.path.exists('token.txt'):
     print('Token file not found. Place your Discord token ID in a file called `token.txt`.', file=sys.stderr)
