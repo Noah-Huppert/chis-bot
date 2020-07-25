@@ -36,18 +36,18 @@ class GameCommands(commands.Cog):
     # captain should be at top of list (bolded)
     def print_team_message(self, captains, turn):
         
-        if self.game.getPeople() != 0:
+        if self.game.getPicks() != 0:
             message = f'**Turn: {turn.display_name}**\n'
         else:
             message = f'**Teams have been selected**\n'
         
         # Free
-        if self.game.isGamers():
+        if self.game.isAgent():
             message += '```\n'
-            for spot in range(self.game.getPeople()):
+            for spot in range(self.game.getPicks()):
                 message += (f'{chr(spot + 127462)}. ')
-                if spot < self.game.getPeople():
-                    message += (f'{self.game.getGamer(spot)}')
+                if spot < self.game.getPicks():
+                    message += (f'{self.game.getAgent(spot)}')
                 message += ('\n')
             message += '```\n'
         
@@ -73,7 +73,7 @@ class GameCommands(commands.Cog):
     # TODO remove hard coded number - zach day
     def emoji_list(self):
         emojis = {}
-        for index in range(self.game.getPeople()):
+        for index in range(self.game.getPicks()):
             emojis[chr(index + 127462)] = index
         return emojis
 
@@ -123,6 +123,9 @@ class GameCommands(commands.Cog):
         if len(args) == 0:
             await ctx.send("Please enter team captains")
             return
+        if len (set(args)) != len(args):
+                await ctx.send("Captains must be different")
+
         self.game.setCaptians(args)
         await self.select_teams(ctx, args)
         self.game_msg = None

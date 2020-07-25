@@ -1,5 +1,7 @@
 import json
 import os
+import copy
+
 
 #TODO $s with no game should cause an error
 #TODO convert to python 2020 getters and setters
@@ -43,13 +45,26 @@ class GameData():
         self.data["people"] = num
         self.save()
 
+    def getPicks(self):
+        self.load()
+        return self.data["picks"]
+    
+    def setPicks(self, num):
+        self.load()
+        self.data["picks"] = num
+        self.save()
+
     def getGamer(self, num):
         self.load()
         return self.data["gamers"][num]["name"]
-
-    def isGamers(self):
+    
+    def getAgent(self, num):
         self.load()
-        return len(self.data["gamers"]) != 0
+        return self.data["agents"][num]["name"]
+
+    def isAgent(self):
+        self.load()
+        return len(self.data["agents"]) != 0
 
     # maybe not add by just display name since it isn't unique
     def teamSize(self, captain):
@@ -63,10 +78,11 @@ class GameData():
     #TODO player should be added by name/discriminator
     def addPlayer(self, captains, pick, choice):
         self.load()
-        self.data["captains"][ captains[pick % len(captains)].display_name ].append(self.data["gamers"][choice]["name"])
-        del self.data["gamers"][choice]
+        self.data["captains"][ captains[pick % len(captains)].display_name ].append(self.data["agents"][choice]["name"])
+        del self.data["agents"][choice]
         self.save()
-        self.setPeople(self.getPeople() - 1)
+        self.setPicks(self.getPicks() -1 )
+        #self.setPeople(self.getPeople() - 1)
 
     def addGamer(self, user):
         self.load()
@@ -89,13 +105,16 @@ class GameData():
     
     def setCaptians(self, captains):
         self.load()
+        self.data["picks"]= self.data["people"]
+        self.data["agents"] = copy.deepcopy(self.data["gamers"])
         self.data["captains"] = {}
+        self.save()
         for cap in captains:
             self.data["captains"][cap.display_name] = []
             # captains cannot pick themselves
-            self.data["gamers"].remove({ "name": cap.name, "tag": cap.discriminator })
+            self.data["agents"].remove({ "name": cap.name, "tag": cap.discriminator })
             self.save()
-            self.setPeople(self.getPeople() - 1)
+            self.setPicks(self.getPicks() - 1)
 
     def turn(self, captains, turn):
         return captains[turn % len(captains)]
