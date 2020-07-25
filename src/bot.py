@@ -31,8 +31,11 @@ class ChisBot(commands.Bot):
         logging.info(f'Logged in as "{self.user}".')
 
 bot = ChisBot()
+# redo the help command to get rid of NoCategory
+#bot.remove_command('help')
 
-extensions = ['cogs.SimpleCommands', 'cogs.GameCommands', 'cogs.HelpCommands']
+
+extensions = ['cogs.simple', 'cogs.game']
 for ext in extensions:
     bot.load_extension(ext)
 

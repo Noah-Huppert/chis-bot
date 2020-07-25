@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 import logging
 
-class SimpleCommands(commands.Cog):
+class simple(commands.Cog):
     def __init__(self, bot):
         self.bot= bot
 
@@ -46,7 +46,7 @@ class SimpleCommands(commands.Cog):
             await ctx.send(f'Not you')
 
 def setup(bot):
-    bot.add_cog(SimpleCommands(bot))
+    bot.add_cog(simple(bot))
 
 
 

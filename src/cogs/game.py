@@ -10,17 +10,20 @@ import os
 # parentdir = os.path.dirname(currentdir)
 # sys.path.insert(0,parentdir) 
 
-from data.GameData import GameData
+from data.data import data
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
-class GameCommands(commands.Cog):
+A_EMOJI = 127462
+
+class game(commands.Cog):
     def __init__(self, bot):
         self.bot= bot
-        self.game = GameData(filename="game_data")
+        self.game = data(filename="game_data")
         self.game_msg = None
 
     def print_message(self):
-        message = 'These are the current users in the party'
+        message = '⠀\n' #blank unicode character
+        message += '**Current Gamers**\n'
         message += '```\n'
         for spot in range(self.game.getSpots()):
             message += (f'{spot + 1}. ')
@@ -28,18 +31,18 @@ class GameCommands(commands.Cog):
                 message += (f'{self.game.getGamer(spot)}')
             message += ('\n')
         message += '\n```'
+        message += '**Basic Commands**: plan, add, del, show, team '
+        message += '[`$help game` for more info]\n'
+
         return message
     
-    # TODO
-    # print who's turn
-    # once picks are up print end message
-    # captain should be at top of list (bolded)
+
     def print_team_message(self, captains, turn):
-        
+        message = '⠀\n' #blank unicode character
         if self.game.getPicks() != 0:
-            message = f'**Turn: {turn.display_name}**\n'
+            message += f'**Turn: {turn.display_name}**\n'
         else:
-            message = f'**Teams have been selected**\n'
+            message += f'**Teams have been selected**\n'
         
         # Free
         if self.game.isAgent():
@@ -74,13 +77,13 @@ class GameCommands(commands.Cog):
     def emoji_list(self):
         emojis = {}
         for index in range(self.game.getPicks()):
-            emojis[chr(index + 127462)] = index
+            emojis[chr(index + A_EMOJI)] = index
         return emojis
 
     # TODO add support for multiple games (waaayy later on)
-    @commands.command(name='game', aliases=['plan', 'p', "g"])
-    async def game_command(self, ctx, spots=5):
-        """ This command takes a number of players and establishes a new game.
+    @commands.command(name='plan', aliases=['p'])
+    async def plan_command(self, ctx, spots=5):
+        """ takes a number of players and creates a new game.
         """
         self.game.start(spots)
         logging.info(f'{ctx.author.display_name} tried to make a game')
@@ -89,7 +92,7 @@ class GameCommands(commands.Cog):
     # TODO catch BadArgument Error when someone passes in a non user argument
     @commands.command(name='add', aliases = ["a"])
     async def add_command(self, ctx, *args: discord.User):
-        """ This command requires @ing a discord user id to add them to the plan. If there are too many people in the party, you have to remove someone to add more
+        """ @users to add them to the game.
         """
         for user in args:
             if self.game.getPeople() < self.game.getSpots():
@@ -102,7 +105,7 @@ class GameCommands(commands.Cog):
         
     @commands.command(name='del', aliases=["delete", "d", "remove"])
     async def remove_command(self, ctx, *args: discord.User):
-        """ This command takes a discord id and deletes them from the plan.
+        """ @users to remove them from the game
         """
         for user in args:
             if self.game.delGamer(user):
@@ -110,21 +113,25 @@ class GameCommands(commands.Cog):
             else:
                 await ctx.send(f'{user} is not a gamer.')
         
-    @commands.command(name="show", aliases = ["s", "list", "print"])
+    @commands.command(name="show", aliases = ["s", "list", "print", "display"])
     async def print_command(self, ctx):
-        """ This command shows the list of players currently added to the match.
+        """ display current gamers
         """
         await self.update_message(ctx, self.print_message())
 
     @commands.command(name="team", aliases=["t", "pick"])
     async def team_command(self, ctx, *args: discord.User):
-        """ This command will initiate the process of team selection. It takes two discord ids with the command as the two team captains. The first id has first pick in team selection.
+        """ @captains to start team selection
         """
         if len(args) == 0:
             await ctx.send("Please enter team captains")
             return
+        if len(args) == 1:
+            await ctx.send("Please enter more than one captain")
+            return
         if len (set(args)) != len(args):
                 await ctx.send("Captains must be different")
+                return
 
         self.game.setCaptians(args)
         await self.select_teams(ctx, args)
@@ -142,4 +149,4 @@ class GameCommands(commands.Cog):
             await self.update_message(ctx, self.print_team_message(captains, captains[(pick + 1) % (len(captains))]))
    
 def setup(bot):
-    bot.add_cog(GameCommands(bot))
+    bot.add_cog(game(bot))

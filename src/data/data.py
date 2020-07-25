@@ -2,14 +2,19 @@ import json
 import os
 import copy
 
+DEFAULT_GAME_SIZE = 5
 
 #TODO $s with no game should cause an error
 #TODO convert to python 2020 getters and setters
-class GameData():
+class data():
     def __init__(self, filename):
         self.filename = filename
         self.data = {}
-        self.save()
+        if os.path.exists(os.path.dirname(__file__) + f'/{self.filename}.json'):
+            self.load()
+        else:
+            self.start()
+            self.save()
 
     def load(self):
         with open(os.path.dirname(__file__) + f'/{self.filename}.json') as f:
@@ -19,8 +24,12 @@ class GameData():
         with open(os.path.dirname(__file__) + f'/{self.filename}.json', 'w') as f:
             json.dump(self.data, f, indent=4)
 
+    # def isEmpty(self):
+    #     if not(bool(self.data)):
+    #         self.start()
+
     #TODO only save if the file doesn't already exist
-    def start(self, spots):
+    def start(self, spots=DEFAULT_GAME_SIZE):
         self.data = {"match": "Game", "spots": spots,
                      "people": 0, "gamers": [], "agents": [], "captains": {}}
         self.save()
