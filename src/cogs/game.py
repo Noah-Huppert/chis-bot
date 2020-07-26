@@ -10,7 +10,7 @@ import os
 # parentdir = os.path.dirname(currentdir)
 # sys.path.insert(0,parentdir) 
 
-from data.data import data
+from data import data
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
 A_EMOJI = 127462
@@ -23,7 +23,9 @@ class game(commands.Cog):
 
     def print_message(self):
         message = '⠀\n' #blank unicode character
-        message += '**Current Gamers**\n'
+        # if self.game.getGame() != 0:
+        #     message += f'**{self.game.getGame()} **\n'
+        message += f'**Gamers**\n'
         message += '```\n'
         for spot in range(self.game.getSpots()):
             message += (f'{spot + 1}. ')
@@ -82,18 +84,21 @@ class game(commands.Cog):
 
     # TODO add support for multiple games (waaayy later on)
     @commands.command(name='plan', aliases=['p'])
-    async def plan_command(self, ctx, spots=5):
+    async def plan_command(self, ctx, spots=5, game=""):
         """ takes a number of players and creates a new game.
         """
-        self.game.start(spots)
+        self.game.start(spots=spots, game=game)
         logging.info(f'{ctx.author.display_name} tried to make a game')
         await self.update_message(ctx, self.print_message())
 
-    # TODO catch BadArgument Error when someone passes in a non user argument
-    @commands.command(name='add', aliases = ["a"])
+    # TODO should be able to add yourself without @
+    @commands.command(name='add', aliases = ["a", "join"])
     async def add_command(self, ctx, *args: discord.User):
         """ @users to add them to the game.
         """
+        if len(args) == 0:
+            args = [ctx.author]
+
         for user in args:
             if self.game.getPeople() < self.game.getSpots():
                 if self.game.addGamer(user):
@@ -103,10 +108,13 @@ class game(commands.Cog):
             else:
                 await ctx.send(f'Cannot add {user}, too many gamers.')
         
-    @commands.command(name='del', aliases=["delete", "d", "remove"])
+    @commands.command(name='del', aliases=["delete", "d", "remove", "leave"])
     async def remove_command(self, ctx, *args: discord.User):
         """ @users to remove them from the game
         """
+        if len(args) == 0:
+            args = [ctx.author]
+
         for user in args:
             if self.game.delGamer(user):
                 await self.update_message(ctx, self.print_message())

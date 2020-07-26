@@ -9,41 +9,43 @@ DEFAULT_GAME_SIZE = 5
 class data():
     def __init__(self, filename):
         self.filename = filename
+        self.agents = []
+        self.captains = {}
         self.data = {}
-        if os.path.exists(os.path.dirname(__file__) + f'/{self.filename}.json'):
+        self.picks = 0
+        if os.path.exists(os.path.dirname(__file__) + f'/data/{self.filename}.json'):
             self.load()
         else:
             self.start()
             self.save()
 
     def load(self):
-        with open(os.path.dirname(__file__) + f'/{self.filename}.json') as f:
+        with open(os.path.dirname(__file__) + f'/data/{self.filename}.json') as f:
             self.data = json.load(f)
 
     def save(self):
         with open(os.path.dirname(__file__) + f'/{self.filename}.json', 'w') as f:
             json.dump(self.data, f, indent=4)
 
-    # def isEmpty(self):
-    #     if not(bool(self.data)):
-    #         self.start()
+
 
     #TODO only save if the file doesn't already exist
-    def start(self, spots=DEFAULT_GAME_SIZE):
-        self.data = {"match": "Game", "spots": spots,
-                     "people": 0, "gamers": [], "agents": [], "captains": {}}
+    def start(self, *args, **kwargs):
+        spots = kwargs.get('spots', DEFAULT_GAME_SIZE)
+        game = kwargs.get('game', "")
+        self.data = {"game": game, "spots": spots,
+                     "people": 0, "gamers": []}
         self.save()
         
             #only save if the file doesn't already existself.save()
 
+    def getGame(self):
+        self.load()
+        return self.data["game"]
+
     def getSpots(self):
         self.load()
         return self.data["spots"]
-
-    # def setSpots(self, num):
-    #     self.load()
-    #     self.data["spots"] = num
-    #     self.save()
 
     def getPeople(self):
         self.load()
@@ -55,13 +57,10 @@ class data():
         self.save()
 
     def getPicks(self):
-        self.load()
-        return self.data["picks"]
+        return self.picks
     
     def setPicks(self, num):
-        self.load()
-        self.data["picks"] = num
-        self.save()
+        self.picks = num
 
     def getGamer(self, num):
         self.load()
@@ -69,28 +68,28 @@ class data():
     
     def getAgent(self, num):
         self.load()
-        return self.data["agents"][num]["name"]
+        return self.agents[num]["name"]
 
     def isAgent(self):
         self.load()
-        return len(self.data["agents"]) != 0
+        return len(self.agents) != 0
 
     # maybe not add by just display name since it isn't unique
     def teamSize(self, captain):
         self.load()
-        return len(self.data["captains"][captain.display_name])
+        return len(self.captains[captain.display_name])
 
     def getPlayer(self, captain, num):
         self.load()
-        return self.data["captains"][captain.display_name][num]
+        return self.captains[captain.display_name][num]
 
     #TODO player should be added by name/discriminator
     def addPlayer(self, captains, pick, choice):
         self.load()
-        self.data["captains"][ captains[pick % len(captains)].display_name ].append(self.data["agents"][choice]["name"])
-        del self.data["agents"][choice]
+        self.captains[ captains[pick % len(captains)].display_name ].append(self.agents[choice]["name"])
+        del self.agents[choice]
         self.save()
-        self.setPicks(self.getPicks() -1 )
+        self.setPicks(self.getPicks() -1)
         #self.setPeople(self.getPeople() - 1)
 
     def addGamer(self, user):
@@ -114,15 +113,13 @@ class data():
     
     def setCaptians(self, captains):
         self.load()
-        self.data["picks"]= self.data["people"]
-        self.data["agents"] = copy.deepcopy(self.data["gamers"])
-        self.data["captains"] = {}
-        self.save()
+        self.picks = self.data["people"]
+        self.agents = copy.deepcopy(self.data["gamers"])
+        self.captains = {}
         for cap in captains:
-            self.data["captains"][cap.display_name] = []
+            self.captains[cap.display_name] = []
             # captains cannot pick themselves
-            self.data["agents"].remove({ "name": cap.name, "tag": cap.discriminator })
-            self.save()
+            self.agents.remove({ "name": cap.name, "tag": cap.discriminator })
             self.setPicks(self.getPicks() - 1)
 
     def turn(self, captains, turn):
