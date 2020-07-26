@@ -4,7 +4,6 @@ import copy
 
 DEFAULT_GAME_SIZE = 5
 
-#TODO $s with no game should cause an error
 #TODO convert to python 2020 getters and setters
 class data():
     def __init__(self, filename):
@@ -24,7 +23,7 @@ class data():
             self.data = json.load(f)
 
     def save(self):
-        with open(os.path.dirname(__file__) + f'/{self.filename}.json', 'w') as f:
+        with open(os.path.dirname(__file__) + f'/data/{self.filename}.json', 'w') as f:
             json.dump(self.data, f, indent=4)
 
 
@@ -37,7 +36,7 @@ class data():
                      "people": 0, "gamers": []}
         self.save()
         
-            #only save if the file doesn't already existself.save()
+    #only save if the file doesn't already existself.save()
 
     def getGame(self):
         self.load()
@@ -90,7 +89,6 @@ class data():
         del self.agents[choice]
         self.save()
         self.setPicks(self.getPicks() -1)
-        #self.setPeople(self.getPeople() - 1)
 
     def addGamer(self, user):
         self.load()

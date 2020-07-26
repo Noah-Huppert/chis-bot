@@ -21,10 +21,11 @@ class game(commands.Cog):
         self.game = data(filename="game_data")
         self.game_msg = None
 
+    # TODO add game title
     def print_message(self):
         message = '⠀\n' #blank unicode character
-        # if self.game.getGame() != 0:
-        #     message += f'**{self.game.getGame()} **\n'
+        if self.game.getGame() != "":
+            message += f'**{self.game.getGame()} **\n'
         message += f'**Gamers**\n'
         message += '```\n'
         for spot in range(self.game.getSpots()):
@@ -75,7 +76,6 @@ class game(commands.Cog):
             await self.game_msg.delete()
         self.game_msg = await ctx.send(message)
     
-    # TODO remove hard coded number - zach day
     def emoji_list(self):
         emojis = {}
         for index in range(self.game.getPicks()):
@@ -84,9 +84,13 @@ class game(commands.Cog):
 
     # TODO add support for multiple games (waaayy later on)
     @commands.command(name='plan', aliases=['p'])
-    async def plan_command(self, ctx, spots=5, game=""):
+    async def plan_command(self, ctx, spots=5, *args):
         """ takes a number of players and creates a new game.
         """
+        game=""
+        if len(args) > 1:
+            game = ' '.join(arg for arg in args[0:])
+
         self.game.start(spots=spots, game=game)
         logging.info(f'{ctx.author.display_name} tried to make a game')
         await self.update_message(ctx, self.print_message())
@@ -120,7 +124,17 @@ class game(commands.Cog):
                 await self.update_message(ctx, self.print_message())
             else:
                 await ctx.send(f'{user} is not a gamer.')
-        
+    
+    
+    @commands.command(name='move', aliases=["transfer", "teamspeak", "m"])
+    async def remove_command(self, ctx, *args: discord.User):
+        """ Moves users from second team to a second voice channel
+        """
+        for user in args:
+            if self.game.delGamer(user):
+                await self.update_message(ctx, self.print_message())
+            else:
+                await ctx.send(f'{user} is not a gamer.')
     @commands.command(name="show", aliases = ["s", "list", "print", "display"])
     async def print_command(self, ctx):
         """ display current gamers
@@ -145,7 +159,6 @@ class game(commands.Cog):
         await self.select_teams(ctx, args)
         self.game_msg = None
 
-    #TODO enforce more than one captain
     async def select_teams(self, ctx, captains):
         await self.update_message(ctx, self.print_team_message(captains, captains[0]))
         for pick in range(self.game.getSpots()- 2):
