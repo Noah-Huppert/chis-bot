@@ -141,6 +141,7 @@ class game(commands.Cog):
         """
         await self.update_message(ctx, self.print_message())
 
+    # TODO last person needs to be added to team of the next captain in queue
     @commands.command(name="team", aliases=["t", "pick"])
     async def team_command(self, ctx, *args: discord.User):
         """ @captains to start team selection
@@ -161,9 +162,12 @@ class game(commands.Cog):
 
     async def select_teams(self, ctx, captains):
         await self.update_message(ctx, self.print_team_message(captains, captains[0]))
-        for pick in range(self.game.getSpots()- 2):
+        for pick in range(self.game.getSpots() - 2):
             # get captain pick
-            choice = await react_prompt_response(self.bot, captains[pick % len(captains)], self.game_msg, reacts=self.emoji_list())
+            if pick != (self.game.getSpots() - 3):
+                choice = await react_prompt_response(self.bot, captains[pick % len(captains)], self.game_msg, reacts=self.emoji_list())
+            else:
+                choice = 0
             # add player to their team
             self.game.addPlayer(captains, pick, choice)
             self.game_msg = None
