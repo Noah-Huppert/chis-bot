@@ -137,12 +137,7 @@ class game(commands.Cog):
     async def move_command(self, ctx):
         """ Moves users from second team to a second voice channel
         """
-
-        for user in args:
-            if self.game.delGamer(user):
-                await self.update_message(ctx, self.print_message())
-            else:
-                await ctx.send(f'{user} is not a gamer.')
+        pass
 
     @commands.command(name="show", aliases = ["s", "list", "print", "display"])
     async def print_command(self, ctx):
