@@ -125,16 +125,25 @@ class game(commands.Cog):
             else:
                 await ctx.send(f'{user} is not a gamer.')
     
-    
+    @commands.command(name="rename", aliases=["r"])
+    async def rename_command(self, ctx):
+        """Renames the current game"""
+        pass
+
+
+    # TODO for user in team if user in voice channel move to correct voice chat
+    # TODO implement a normie check (if all users are mormies, add to private voice channel)
     @commands.command(name='move', aliases=["transfer", "teamspeak", "m"])
-    async def remove_command(self, ctx, *args: discord.User):
+    async def move_command(self, ctx):
         """ Moves users from second team to a second voice channel
         """
+
         for user in args:
             if self.game.delGamer(user):
                 await self.update_message(ctx, self.print_message())
             else:
                 await ctx.send(f'{user} is not a gamer.')
+
     @commands.command(name="show", aliases = ["s", "list", "print", "display"])
     async def print_command(self, ctx):
         """ display current gamers
