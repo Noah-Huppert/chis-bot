@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.8
 
 import discord
 from discord.ext import commands
@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO, handlers=[log_handler, logging.StreamHan
 
 class ChisBot(commands.Bot):
     def __init__(self, *args, **kwargs):
-        super().__init__(command_prefix='$', *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def run(self, *args, **kwargs):
         return super().run(*args, **kwargs)
@@ -30,17 +30,21 @@ class ChisBot(commands.Bot):
     async def on_ready(self):
         logging.info(f'Logged in as "{self.user}".')
 
+with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
+    config = json.load(f)
+    bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"])
 
-bot = ChisBot()
+# redo the help command to get rid of NoCategory
+#bot.remove_command('help')
 
-@bot.command()
-async def hi(ctx):
-    logging.info(f'said hello to {ctx.author.display_name}')
-    await ctx.send('Sup, chad ;)')
+extensions = ['cogs.simple', 'cogs.game']
+for ext in extensions:
+    bot.load_extension(ext)
 
-if not os.path.exists('token.txt'):
-    print('Token file not found. Place your Discord token ID in a file called `token.txt`.', file=sys.stderr)
+if not os.path.exists(os.path.dirname(__file__) + '/../config.json'):
+    print('Token file not found. Place your Discord token ID in a file called `config.json`.', file=sys.stderr)
     sys.exit(1)
 
-with open('token.txt', 'r') as token_file:
-    bot.run(token_file.read())
+with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
+    config = json.load(f)
+    bot.run(config["token"])

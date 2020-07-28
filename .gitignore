@@ -130,3 +130,5 @@ dmypy.json
 
 # Discord Bot stuff
 token.txt
+src/data/game_data.json
+config.json
