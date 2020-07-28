@@ -4,12 +4,6 @@ import logging
 import json
 import os
 
-# this made GameData work, now I don't need it?
-# import os,sys,inspect
-# currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-# parentdir = os.path.dirname(currentdir)
-# sys.path.insert(0,parentdir) 
-
 from data import data
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
@@ -21,7 +15,6 @@ class game(commands.Cog):
         self.game = data(filename="game_data")
         self.game_msg = None
 
-    # TODO add game title
     def print_message(self):
         message = '⠀\n' #blank unicode character
         if self.game.getGame() != "":
@@ -39,7 +32,6 @@ class game(commands.Cog):
 
         return message
     
-
     def print_team_message(self, captains, turn):
         message = '⠀\n' #blank unicode character
         if self.game.getPicks() != 0:
@@ -88,14 +80,13 @@ class game(commands.Cog):
         """ takes a number of players and creates a new game.
         """
         game=""
-        if len(args) > 1:
+        if len(args) > 0:
             game = ' '.join(arg for arg in args[0:])
 
         self.game.start(spots=spots, game=game)
         logging.info(f'{ctx.author.display_name} tried to make a game')
         await self.update_message(ctx, self.print_message())
 
-    # TODO should be able to add yourself without @
     @commands.command(name='add', aliases = ["a", "join"])
     async def add_command(self, ctx, *args: discord.User):
         """ @users to add them to the game.
@@ -145,7 +136,7 @@ class game(commands.Cog):
         """
         await self.update_message(ctx, self.print_message())
 
-    # TODO last person needs to be added to team of the next captain in queue
+    # TODO initial pick should be random
     @commands.command(name="team", aliases=["t", "pick"])
     async def team_command(self, ctx, *args: discord.User):
         """ @captains to start team selection

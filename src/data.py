@@ -28,7 +28,6 @@ class data():
 
 
 
-    #TODO only save if the file doesn't already exist
     def start(self, *args, **kwargs):
         spots = kwargs.get('spots', DEFAULT_GAME_SIZE)
         game = kwargs.get('game', "")
@@ -36,8 +35,6 @@ class data():
                      "people": 0, "gamers": []}
         self.save()
         
-    #only save if the file doesn't already existself.save()
-
     def getGame(self):
         self.load()
         return self.data["game"]
@@ -73,7 +70,7 @@ class data():
         self.load()
         return len(self.agents) != 0
 
-    # maybe not add by just display name since it isn't unique
+    # TODO add by just display name since it isn't unique
     def teamSize(self, captain):
         self.load()
         return len(self.captains[captain.display_name])
