@@ -10,7 +10,7 @@ from discord_eprompt import ReactPromptPreset, react_prompt_response
 A_EMOJI = 127462
 
 class game(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot= bot
         self.game = data(filename="game_data")
         self.game_msg = None

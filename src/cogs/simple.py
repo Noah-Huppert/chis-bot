@@ -1,10 +1,19 @@
 from discord.ext import commands
 import discord
 import logging
+import sys
 
 class simple(commands.Cog):
-    def __init__(self, bot):
-        self.bot= bot
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
+    @commands.command(name='kill', alias=['k'], hidden=True)
+    async def kill_command(self,ctx):
+        """ owner command to kill the bot
+        """
+        if await self.bot.is_owner(ctx.message.author):
+            sys.exit(0)
+        await ctx.send('Weakling')
 
     @commands.command(name='hello', aliases=['hi'])
     async def hi_command(self, ctx):
