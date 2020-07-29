@@ -87,7 +87,7 @@ class game(commands.Cog):
         logging.info(f'{ctx.author.display_name} tried to make a game')
         await self.update_message(ctx, self.print_message())
 
-    @commands.command(name='add', aliases = ["a", "join"])
+    @commands.command(name='add', aliases = ['a', 'join'])
     async def add_command(self, ctx, *args: discord.User):
         """ @users to add them to the game.
         """
@@ -103,7 +103,7 @@ class game(commands.Cog):
             else:
                 await ctx.send(f'Cannot add {user}, too many gamers.')
         
-    @commands.command(name='del', aliases=["delete", "d", "remove", "leave"])
+    @commands.command(name='del', aliases=['delete', 'd', 'remove', 'leave'])
     async def remove_command(self, ctx, *args: discord.User):
         """ @users to remove them from the game
         """
@@ -116,7 +116,7 @@ class game(commands.Cog):
             else:
                 await ctx.send(f'{user} is not a gamer.')
     
-    @commands.command(name="rename", aliases=["r"])
+    @commands.command(name='rename', aliases=['r'])
     async def rename_command(self, ctx):
         """Renames the current game"""
         pass
@@ -130,7 +130,7 @@ class game(commands.Cog):
         """
         pass
 
-    @commands.command(name="show", aliases = ["s", "list", "print", "display"])
+    @commands.command(name='show', aliases = ['s', 'list', 'print', 'display'])
     async def print_command(self, ctx):
         """ display current gamers
         """

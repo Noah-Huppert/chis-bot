@@ -8,7 +8,7 @@ class simple(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name='kill', alias=['k'], hidden=True)
+    @commands.command(name='kill', aliases=['k'], hidden=True)
     async def kill_command(self,ctx):
         """ owner command to kill the bot
         """
@@ -23,7 +23,7 @@ class simple(commands.Cog):
         logging.info(f'Said hello to {ctx.author.display_name}')
         await ctx.send('Sup, chad ;)')
 
-    @commands.command(name='flip', alias=['f', 'c', 'coin'])
+    @commands.command(name='flip', aliases=['f', 'c', 'coin'])
     async def flip_command(self, ctx):
         """ flip a coin
         """
@@ -31,7 +31,7 @@ class simple(commands.Cog):
             await ctx.send('Heads')
         await ctx.send('Tails')
 
-    @commands.command(name='roll', alias= ['r'])
+    @commands.command(name='roll', aliases= ['die', 'dice'])
     async def roll_command(self, ctx, num: int):
         """ roll 'n' sided die
         """
