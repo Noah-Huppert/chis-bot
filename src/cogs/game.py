@@ -3,11 +3,13 @@ import discord
 import logging
 import json
 import os
+import random
 
 from data import data
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
 A_EMOJI = 127462
+MAPS = ['Haven', 'Split', 'Ascent', 'Bind']
 
 class game(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -59,6 +61,8 @@ class game(commands.Cog):
                      message += (f'{self.game.getPlayer(cap, spot)}')
                 message += ('\n')
             message += '\n```'
+        if self.game.getPicks() == 0:
+            message += f'**{turn.display_name} picked last, they get priority picking sides.**\n'
 
         return message
 
@@ -156,17 +160,37 @@ class game(commands.Cog):
         self.game_msg = None
 
     async def select_teams(self, ctx, captains):
-        await self.update_message(ctx, self.print_team_message(captains, captains[0]))
-        for pick in range(self.game.getSpots() - 2):
+        offset = random.randint(0,300)
+        await self.update_message(ctx, self.print_team_message(captains, captains[offset % len(captains)]))
+        for pick in range(self.game.getSpots() - len(captains)):
             # get captain pick
-            if pick != (self.game.getSpots() - 3):
-                choice = await react_prompt_response(self.bot, captains[pick % len(captains)], self.game_msg, reacts=self.emoji_list())
+            if pick != (self.game.getSpots() - (len(captains) + 1)):
+                choice = await react_prompt_response(self.bot, captains[(offset + pick) % len(captains)], self.game_msg, reacts=self.emoji_list())
             else:
                 choice = 0
             # add player to their team
-            self.game.addPlayer(captains, pick, choice)
+            self.game.addPlayer(captains, (offset + pick), choice)
             self.game_msg = None
-            await self.update_message(ctx, self.print_team_message(captains, captains[(pick + 1) % (len(captains))]))
+
+            if pick == self.game.getSpots() - (len(captains) + 1):
+                await self.update_message(ctx, self.print_team_message(captains, captains[(offset + pick) % (len(captains))]))
+            else:
+                await self.update_message(ctx, self.print_team_message(captains, captains[(offset + pick + 1) % (len(captains))]))
    
+    @commands.command(name='side')
+    async def side_command(self, ctx):
+        """ picks a side Attackers/Defenders
+        """
+        if random.randint(0,1) == 0:
+            await ctx.send('Attackers')
+            return
+        await ctx.send('Defenders')
+    
+    @commands.command(name='map')
+    async def map_command(self, ctx):
+        """ picks a Valorant map
+        """
+        await ctx.send(random.choice(MAPS))
+
 def setup(bot):
     bot.add_cog(game(bot))

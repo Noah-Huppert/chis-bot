@@ -29,6 +29,7 @@ class simple(commands.Cog):
         """
         if random.randint(0,1) == 0:
             await ctx.send('Heads')
+            return
         await ctx.send('Tails')
 
     @commands.command(name='roll', aliases= ['die', 'dice'])
