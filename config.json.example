@@ -1,5 +1,5 @@
 {
     "token": "TOKEN HERE",
     "prefix": "$",
-    "owners": {}
+    "owners": []
 }

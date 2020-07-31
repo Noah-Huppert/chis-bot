@@ -34,9 +34,6 @@ with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
     config = json.load(f)
     bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"])
 
-# redo the help command to get rid of NoCategory
-#bot.remove_command('help')
-
 extensions = ['cogs.simple', 'cogs.game']
 for ext in extensions:
     bot.load_extension(ext)

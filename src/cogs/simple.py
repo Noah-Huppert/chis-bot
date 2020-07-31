@@ -1,10 +1,20 @@
 from discord.ext import commands
 import discord
 import logging
+import sys
+import random
 
 class simple(commands.Cog):
-    def __init__(self, bot):
-        self.bot= bot
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
+    @commands.command(name='kill', aliases=['k'], hidden=True)
+    async def kill_command(self,ctx):
+        """ owner command to kill the bot
+        """
+        if await self.bot.is_owner(ctx.message.author):
+            sys.exit(0)
+        await ctx.send('Weakling')
 
     @commands.command(name='hello', aliases=['hi'])
     async def hi_command(self, ctx):
@@ -13,16 +23,20 @@ class simple(commands.Cog):
         logging.info(f'Said hello to {ctx.author.display_name}')
         await ctx.send('Sup, chad ;)')
 
-    @commands.command(name='pet', aliases=['woof'])
-    async def pet_command(self, ctx):
-        """ Bellies out.
+    @commands.command(name='flip', aliases=['f', 'c', 'coin'])
+    async def flip_command(self, ctx):
+        """ flip a coin
         """
-        logging.info(f'{ctx.author.display_name} tried to pet me')
-        try:
-            await ctx.author.edit(nick="dummy")
-        except discord.Forbidden:
-            logging.info(f'Cannot rename {ctx.author.display_name}')
-        await ctx.send(f'I\'m not a dog, {ctx.author.display_name}.')
+        if random.randint(0,1) == 0:
+            await ctx.send('Heads')
+            return
+        await ctx.send('Tails')
+
+    @commands.command(name='roll', aliases= ['die', 'dice'])
+    async def roll_command(self, ctx, num: int):
+        """ roll 'n' sided die
+        """
+        await ctx.send(f'Rolled: {random.randint(0,num)}')
     
     @commands.command(name='trans', aliases=['queen', 'king'])
     async def trans_command(self, ctx):
@@ -34,16 +48,6 @@ class simple(commands.Cog):
             await ctx.guild.me.edit(nick='Rat King')
         else:
             await ctx.guild.me.edit(nick='Rat Queen')
-
-    @commands.command(name='user')
-    async def user_command(self, ctx, user: discord.User):
-        """ Is this you dawg?
-        """
-        logging.info(user)
-        if user == ctx.author:
-            await ctx.send(f'You are {user}')
-        else:
-            await ctx.send(f'Not you')
 
 def setup(bot):
     bot.add_cog(simple(bot))

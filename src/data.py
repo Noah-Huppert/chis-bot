@@ -116,6 +116,3 @@ class data():
             # captains cannot pick themselves
             self.agents.remove({ "name": cap.name, "tag": cap.discriminator })
             self.setPicks(self.getPicks() - 1)
-
-    def turn(self, captains, turn):
-        return captains[turn % len(captains)]
