@@ -1,66 +1,87 @@
 import json
 import os
 import copy
+import random
+import logging
+from collections import OrderedDict
 
 DEFAULT_GAME_SIZE = 5
 
 #TODO convert to python 2020 getters and setters
 class data():
-    def __init__(self, filename):
-        self.filename = filename
-        self.agents = []
-        self.captains = {}
+    def __init__(self, server):
+        self.server = server
+        # self.agents = []
         self.data = {}
-        self.picks = 0
-        if os.path.exists(os.path.dirname(__file__) + f'/data/{self.filename}.json'):
+        # self.picks = 0
+        if os.path.exists(os.path.dirname(__file__) + f'/data/{self.server}.json'):
             self.load()
         else:
             self.start()
             self.save()
 
+    @property
+    def title(self):
+        self.load()
+        return self.data["title"]
+
+    @property
+    def spots(self):
+        self.load()
+        return self.data["spots"]
+
+    @property
+    def people(self):
+        self.load()
+        return len(self.data["gamers"])
+
+    @property
+    def picks(self):
+        self.load()
+        return len(self.data["agents"])
+
+    @property
+    def captains(self):
+        self.load()
+        return list(self.data['captains'].keys())
+    
+    @captains.setter
+    def captains(self, args):
+        self.load()
+        self.data['agents'] = copy.deepcopy(self.data['gamers'])
+        self.data['captains'] = OrderedDict()
+        for cap in args:
+            # captains cannot pick themselves
+            try:
+                self.data['agents'].remove(cap.id)
+            except ValueError:
+                return False
+            self.data['captains'][cap.id] = []
+        self.save()
+        return True
+
+
     def load(self):
-        with open(os.path.dirname(__file__) + f'/data/{self.filename}.json') as f:
+        with open(os.path.dirname(__file__) + f'/data/{self.server}.json') as f:
             self.data = json.load(f)
 
     def save(self):
-        with open(os.path.dirname(__file__) + f'/data/{self.filename}.json', 'w') as f:
+        with open(os.path.dirname(__file__) + f'/data/{self.server}.json', 'w') as f:
             json.dump(self.data, f, indent=4)
 
 
 
     def start(self, *args, **kwargs):
-        spots = kwargs.get('spots', DEFAULT_GAME_SIZE)
-        game = kwargs.get('game', "")
-        self.data = {"game": game, "spots": spots,
-                     "people": 0, "gamers": []}
-        self.save()
-        
-    def getGame(self):
-        self.load()
-        return self.data["game"]
-
-    def getSpots(self):
-        self.load()
-        return self.data["spots"]
-
-    def getPeople(self):
-        self.load()
-        return self.data["people"]
-
-    def setPeople(self, num):
-        self.load()
-        self.data["people"] = num
+        self.data['title'] = kwargs.get('title', "")
+        self.data['spots'] = kwargs.get('spots', DEFAULT_GAME_SIZE)
+        self.data['gamers'] = []
+        self.data['agents'] = []
+        self.data['captains'] = OrderedDict()
         self.save()
 
-    def getPicks(self):
-        return self.picks
-    
-    def setPicks(self, num):
-        self.picks = num
-
-    def getGamer(self, num):
+    def get_gamer(self, num):
         self.load()
-        return self.data["gamers"][num]["name"]
+        return self.data['gamers'][num]
     
     def getAgent(self, num):
         self.load()
@@ -69,6 +90,13 @@ class data():
     def isAgent(self):
         self.load()
         return len(self.agents) != 0
+
+    def getPicks(self):
+        return self.picks
+    
+    def setPicks(self, num):
+        self.picks = num
+
 
     # TODO add by just display name since it isn't unique
     def teamSize(self, captain):
@@ -87,32 +115,24 @@ class data():
         self.save()
         self.setPicks(self.getPicks() -1)
 
-    def addGamer(self, user):
+    # use user tuple in dict
+    def add_gamer(self, user):
         self.load()
-        if {"name": user.name, "tag": user.discriminator} not in self.data["gamers"]:
-            self.data["gamers"].append(
-                {"name": user.name, "tag": user.discriminator})
+        if user.id not in self.data['gamers']:
+            self.data['gamers'].append(user.id)
             self.save()
-            self.setPeople(self.getPeople() + 1)
             return True
         return False
 
-    def delGamer(self, user):
+    def del_gamer(self, user):
         self.load()
-        if {"name": user.name, "tag": user.discriminator} in self.data["gamers"]:
-            self.data["gamers"].remove({"name": user.name, "tag": user.discriminator})
+        if user.id in self.data['gamers']:
+            self.data['gamers'].remove(user.id)
             self.save()
-            self.setPeople(self.getPeople() - 1)
             return True
         return  False
     
-    def setCaptians(self, captains):
+    def turn(self):
         self.load()
-        self.picks = self.data["people"]
-        self.agents = copy.deepcopy(self.data["gamers"])
-        self.captains = {}
-        for cap in captains:
-            self.captains[cap.display_name] = []
-            # captains cannot pick themselves
-            self.agents.remove({ "name": cap.name, "tag": cap.discriminator })
-            self.setPicks(self.getPicks() - 1)
+        self.data["captains"][self.picks % len(self.captains)]
+

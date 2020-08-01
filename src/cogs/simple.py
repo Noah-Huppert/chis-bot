@@ -3,6 +3,7 @@ import discord
 import logging
 import sys
 import random
+from data import data
 
 class simple(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -22,6 +23,12 @@ class simple(commands.Cog):
         """
         logging.info(f'Said hello to {ctx.author.display_name}')
         await ctx.send('Sup, chad ;)')
+
+    @commands.command(name='test')
+    async def test_command(self, ctx, *args):
+        game = data(ctx.guild.id)
+        game.test = args
+        await ctx.send('testing')
 
     @commands.command(name='flip', aliases=['f', 'c', 'coin'])
     async def flip_command(self, ctx):
