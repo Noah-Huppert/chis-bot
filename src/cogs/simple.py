@@ -30,7 +30,7 @@ class simple(commands.Cog):
         game.test = args
         await ctx.send('testing')
 
-    @commands.command(name='flip', aliases=['f', 'c', 'coin'])
+    @commands.command(name='flip', aliases=['f', 'coin'])
     async def flip_command(self, ctx):
         """ flip a coin
         """
