@@ -14,169 +14,8 @@ MAPS = ['Haven', 'Split', 'Ascent', 'Bind']
 class game(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot= bot
-        self.game = data(filename="game_data")
-        self.game_msg = None
+        self.game_msg = {}
 
-    def print_message(self):
-        message = '⠀\n' #blank unicode character
-        if self.game.getGame() != "":
-            message += f'**{self.game.getGame()} **\n'
-        message += f'**Gamers**\n'
-        message += '```\n'
-        for spot in range(self.game.getSpots()):
-            message += (f'{spot + 1}. ')
-            if spot < self.game.getPeople():
-                message += (f'{self.game.getGamer(spot)}')
-            message += ('\n')
-        message += '\n```'
-        message += '**Basic Commands**: plan, add, del, show, team '
-        message += '[`$help game` for more info]\n'
-
-        return message
-    
-    def print_team_message(self, captains, turn):
-        message = '⠀\n' #blank unicode character
-        if self.game.getPicks() != 0:
-            message += f'**Turn: {turn.display_name}**\n'
-        else:
-            message += f'**Teams have been selected**\n'
-        
-        # Free
-        if self.game.isAgent():
-            message += '```\n'
-            for spot in range(self.game.getPicks()):
-                message += (f'{chr(spot + 127462)}. ')
-                if spot < self.game.getPicks():
-                    message += (f'{self.game.getAgent(spot)}')
-                message += ('\n')
-            message += '```\n'
-        
-        # Taken
-        for cap in captains:
-            message += '```\n'
-            message += f'1. {cap.display_name} (captain)\n'
-            for spot in range(int(self.game.getSpots()/len(captains)) - 1):
-                message += (f'{spot + 2}. ')
-                if spot < self.game.teamSize(cap):
-                     message += (f'{self.game.getPlayer(cap, spot)}')
-                message += ('\n')
-            message += '\n```'
-        if self.game.getPicks() == 0:
-            message += f'**{turn.display_name} picked last, they get priority picking sides.**\n'
-
-        return message
-
-    async def update_message(self, ctx, message):
-        if self.game_msg is not None:
-            logging.info('deleting game message')
-            await self.game_msg.delete()
-        self.game_msg = await ctx.send(message)
-    
-    def emoji_list(self):
-        emojis = {}
-        for index in range(self.game.getPicks()):
-            emojis[chr(index + A_EMOJI)] = index
-        return emojis
-
-    # TODO add support for multiple games (waaayy later on)
-    @commands.command(name='plan', aliases=['p'])
-    async def plan_command(self, ctx, spots=5, *args):
-        """ takes a number of players and creates a new game.
-        """
-        game=""
-        if len(args) > 0:
-            game = ' '.join(arg for arg in args[0:])
-
-        self.game.start(spots=spots, game=game)
-        logging.info(f'{ctx.author.display_name} tried to make a game')
-        await self.update_message(ctx, self.print_message())
-
-    @commands.command(name='add', aliases = ['a', 'join'])
-    async def add_command(self, ctx, *args: discord.User):
-        """ @users to add them to the game.
-        """
-        if len(args) == 0:
-            args = [ctx.author]
-
-        for user in args:
-            if self.game.getPeople() < self.game.getSpots():
-                if self.game.addGamer(user):
-                    await self.update_message(ctx, self.print_message())
-                else:
-                    await ctx.send(f'{user} is already a gamer.')
-            else:
-                await ctx.send(f'Cannot add {user}, too many gamers.')
-        
-    @commands.command(name='del', aliases=['delete', 'd', 'remove', 'leave'])
-    async def remove_command(self, ctx, *args: discord.User):
-        """ @users to remove them from the game
-        """
-        if len(args) == 0:
-            args = [ctx.author]
-
-        for user in args:
-            if self.game.delGamer(user):
-                await self.update_message(ctx, self.print_message())
-            else:
-                await ctx.send(f'{user} is not a gamer.')
-    
-    @commands.command(name='rename', aliases=['r'])
-    async def rename_command(self, ctx):
-        """Renames the current game"""
-        pass
-
-
-    # TODO for user in team if user in voice channel move to correct voice chat
-    # TODO implement a normie check (if all users are mormies, add to private voice channel)
-    @commands.command(name='move', aliases=["transfer", "teamspeak", "m"])
-    async def move_command(self, ctx):
-        """ Moves users from second team to a second voice channel
-        """
-        pass
-
-    @commands.command(name='show', aliases = ['s', 'list', 'print', 'display'])
-    async def print_command(self, ctx):
-        """ display current gamers
-        """
-        await self.update_message(ctx, self.print_message())
-
-    # TODO initial pick should be random
-    @commands.command(name="team", aliases=["t", "pick"])
-    async def team_command(self, ctx, *args: discord.User):
-        """ @captains to start team selection
-        """
-        if len(args) == 0:
-            await ctx.send("Please enter team captains")
-            return
-        if len(args) == 1:
-            await ctx.send("Please enter more than one captain")
-            return
-        if len (set(args)) != len(args):
-                await ctx.send("Captains must be different")
-                return
-
-        self.game.setCaptians(args)
-        await self.select_teams(ctx, args)
-        self.game_msg = None
-
-    async def select_teams(self, ctx, captains):
-        offset = random.randint(0,300)
-        await self.update_message(ctx, self.print_team_message(captains, captains[offset % len(captains)]))
-        for pick in range(self.game.getSpots() - len(captains)):
-            # get captain pick
-            if pick != (self.game.getSpots() - (len(captains) + 1)):
-                choice = await react_prompt_response(self.bot, captains[(offset + pick) % len(captains)], self.game_msg, reacts=self.emoji_list())
-            else:
-                choice = 0
-            # add player to their team
-            self.game.addPlayer(captains, (offset + pick), choice)
-            self.game_msg = None
-
-            if pick == self.game.getSpots() - (len(captains) + 1):
-                await self.update_message(ctx, self.print_team_message(captains, captains[(offset + pick) % (len(captains))]))
-            else:
-                await self.update_message(ctx, self.print_team_message(captains, captains[(offset + pick + 1) % (len(captains))]))
-   
     @commands.command(name='side')
     async def side_command(self, ctx):
         """ picks a side Attackers/Defenders
@@ -191,6 +30,179 @@ class game(commands.Cog):
         """ picks a Valorant map
         """
         await ctx.send(random.choice(MAPS))
+
+    @commands.command(name='plan', aliases=['p'])
+    async def plan_command(self, ctx, spots=5, *args):
+        """ takes a number of players and creates a new game.
+        """
+        title=""
+        if len(args) > 0:
+            title = ' '.join(arg for arg in args[0:])
+        
+        game = data(ctx.guild.id)
+        game.start(spots=spots, title=title)
+        logging.info(f'{ctx.author.display_name} tried to make a game')
+        await self.update_message(ctx, self.print_message(game))
+
+    @commands.command(name='add', aliases = ['a', 'join'])
+    async def add_command(self, ctx, *args: discord.User):
+        """ @users to add them to the game.
+        """
+        game = data(ctx.guild.id)
+        if len(args) == 0:
+            args = [ctx.author]
+
+        for user in args:
+            if game.people < game.spots:
+                if game.add_gamer(user):
+                    await self.update_message(ctx, self.print_message(game))
+                else:
+                    await ctx.send(f'{user} is already a gamer.')
+            else:
+                await ctx.send(f'Cannot add {user}, too many gamers.')
+        
+    @commands.command(name='del', aliases=['delete', 'd', 'remove', 'leave'])
+    async def remove_command(self, ctx, *args: discord.User):
+        """ @users to remove them from the game
+        """
+        game = data(ctx.guild.id)
+        if len(args) == 0:
+            args = [ctx.author]
+
+        for user in args:
+            if game.del_gamer(user):
+                await self.update_message(ctx, self.print_message(game))
+            else:
+                await ctx.send(f'{user} is not a gamer.')
+    
+    @commands.command(name='rename', aliases=[])
+    async def rename_command(self, ctx, *args):
+        """Renames the current game"""
+        game = data(ctx.guild.id)
+        game.title = ""
+        if len(args) > 0:
+            game.title = ' '.join(arg for arg in args[0:])
+        await self.update_message(ctx, self.print_message(game))
+
+    # TODO for user in team if user in voice channel move to correct voice chat
+    # TODO implement a normie check (if all users are normies, add to private voice channel)
+    @commands.command(name='move', aliases=["transfer", "teamspeak", "m"])
+    async def move_command(self, ctx):
+        """ Moves users from second team to a second voice channel
+        """
+        pass
+
+    @commands.command(name='show', aliases = ['s', 'list', 'print', 'display'])
+    async def print_command(self, ctx):
+        """ display current gamers
+        """
+        game = data(ctx.guild.id)
+        await self.update_message(ctx, self.print_message(game))
+
+    @commands.command(name="team", aliases=["t"])
+    async def team_command(self, ctx, *args: discord.User):
+        """ @captains to start team selection
+        """
+        if len(args) == 0:
+            await ctx.send("Please enter team captains")
+            return
+        if len(args) == 1:
+            await ctx.send("Please enter more than one captain")
+            return
+        if len (set(args)) != len(args):
+                await ctx.send("Captains must be different")
+                return
+        game = data(ctx.guild.id)
+        game.captains = args
+        await self.select_teams(ctx, game)
+        del self.game_msg[ctx.guild.id] 
+
+    async def select_teams(self, ctx, game: data):
+        # initial captain
+        game.turn = game.captains[0 % len(game.captains)]
+        await self.update_message(ctx, self.print_team_message(game))
+
+        for pick in range(game.picks):
+            # get captain pick
+            game.turn = game.captains[pick % len(game.captains)]
+
+            if game.picks != 1:
+                choice = await react_prompt_response(self.bot, self.bot.get_user(game.turn), self.game_msg[ctx.guild.id], reacts=self.emoji_list(game))
+            else:
+                choice = 0
+            # add player to their team
+            game.add_player(game.turn, choice)
+            del self.game_msg[ctx.guild.id]
+
+            if game.picks != 0:
+                game.turn = game.captains[(pick - 1) % len(game.captains)]
+            await self.update_message(ctx, self.print_team_message(game))
+
+    def print_message(self, game: data):
+        message = '⠀\n' #blank unicode character
+        if game.title != "":
+            message += f'**{game.title} **\n'
+        message += f'**Gamers**\n'
+        message += '```\n'
+        for spot in range(game.spots):
+            message += f'{spot + 1}. '
+            if spot < game.people:
+                # correctly print user, even if name changes
+                discord_id = game.get_gamer(spot)
+                message += (f'{self.bot.get_user(discord_id).name}')
+            message += ('\n')
+        message += '\n```'
+        message += '**Basic Commands**: plan, add, del, show, team'
+        message += '[`$help game` for more info]\n'
+
+        return message
+    
+    def print_team_message(self, game: data):
+        message = '⠀\n' #blank unicode character
+        if game.picks != 0:
+            message += f'**Turn: {self.bot.get_user(game.turn).name}**\n'
+        else:
+            message += f'**Teams have been selected**\n'
+        
+        # Free
+        if game.picks != 0:
+            message += '```\n'
+            for spot in range(game.picks):
+                message += (f'{chr(spot + 127462)}. ')
+                if spot < game.picks:
+                    discord_id = game.get_agent(spot)
+                    message += (f'{self.bot.get_user(discord_id).name}')
+                message += ('\n')
+            message += '```\n'
+        
+        # Taken
+        for cap in game.captains:
+            message += '```\n'
+            message += f'1. {self.bot.get_user(cap).name} (captain)\n'
+            for spot in range(int(game.spots/len(game.captains)) - 1):
+                message += (f'{spot + 2}. ')
+                if spot < game.team_size(cap):
+                    discord_id = game.get_player(cap, spot)
+                    message += (f'{self.bot.get_user(discord_id).name}')
+                message += ('\n')
+            message += '\n```'
+        if game.picks == 0:
+            message += f'**{self.bot.get_user(game.turn).name} picked last, they get priority picking sides.**\n'
+
+        return message
+
+    async def update_message(self, ctx, message):
+        if  ctx.guild.id in self.game_msg:
+            await self.game_msg[ctx.guild.id].delete()
+        else:
+            logging.info(f'No game message found on {ctx.guild.name}, printing new one')
+        self.game_msg[ctx.guild.id] = await ctx.send(message)
+    
+    def emoji_list(self, game: data):
+        emojis = {}
+        for index in range(game.picks):
+            emojis[chr(index + A_EMOJI)] = index
+        return emojis
 
 def setup(bot):
     bot.add_cog(game(bot))
