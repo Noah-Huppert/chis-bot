@@ -1,2 +1,3 @@
 discord
 discord-eprompt
+python-dateutil
