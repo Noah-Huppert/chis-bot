@@ -1,10 +1,7 @@
 from discord.ext import commands
 import discord
 import logging
-import json
-import os
 import random
-
 from data import data
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
@@ -13,7 +10,7 @@ MAPS = ['Haven', 'Split', 'Ascent', 'Bind']
 
 class game(commands.Cog):
     def __init__(self, bot: commands.Bot):
-        self.bot= bot
+        self.bot = bot
         self.game_msg = {}
 
     @commands.command(name='side')

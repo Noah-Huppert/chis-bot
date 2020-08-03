@@ -32,6 +32,7 @@ class data():
         self.data['agents'] = []
         self.data['captains'] = OrderedDict()
         self.data['turn'] = None
+        self.data['info'] = {} # dict of user_ids where value is dict
         self.save()
 
     @property
