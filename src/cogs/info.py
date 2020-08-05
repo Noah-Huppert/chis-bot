@@ -14,8 +14,10 @@ class info(commands.Cog):
     async def birthday_command(self, ctx, user: discord.User, *args):
         """ get/set @users birthday
         """
-        # if user is None:
-        #     user = ctx.author.id
+        if user is "None":
+            user = ctx.author.id
+        logging.info(user)
+        logging.info(args)
 
         if len(args) > 0:
             birthday = ' '.join(arg for arg in args[0:])
