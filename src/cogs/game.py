@@ -84,22 +84,62 @@ class game(commands.Cog):
             game.title = ' '.join(arg for arg in args[0:])
         await self.update_message(ctx, self.print_message(game))
 
-    # TODO for user in team if user in voice channel move to correct voice chat
-    # TODO implement a normie check (if all users are normies, add to private voice channel)
-    @commands.command(name='move', aliases=["transfer", "teamspeak", "m"])
-    async def move_command(self, ctx):
-        """ Moves users from second team to a second voice channel
+    @commands.command(name='play', aliases=[])
+    async def play_command(self, ctx):
+        """ moves teams to respective voice channels
         """
-        # birds, ground hogs
-        voice_channels = [726326159008333854, 726326159008333854]
         game = data(ctx.guild.id)
-        cap = game.captains
+        if game.turn == None:
+            await ctx.send("Teams have not been picked")
+            return
+
+        voice_channels = ctx.guild.voice_channels
+
+        if len(game.captains) > len(voice_channels):
+            await ctx.send("Not enough voice channels to move players")
+            return
+
         for i in range(len(game.captains)):
-            cap = game.captains[i]
-            for player in game.get_players(cap):
-                print(test)
+            captain = game.captains[i]
+            
+            message = '⠀\n' #blank unicode character
+            message += f'**Move {self.bot.get_user(captain).display_name}\'s team**'
+            message += '```\n'
+            message += '\n'.join('{}. {}'.format(chr(k[0]), k[1]) for k in enumerate(voice_channels, start=A_EMOJI))
+            message += '```'
+            message = await ctx.send(message)
 
+            choice = await react_prompt_response(self.bot, ctx.author, message, reacts=self.emoji_list(len(voice_channels)))
+            selected_channel = voice_channels[choice]
+            #move captain
+            if ctx.guild.get_member(captain).voice != None:
+                await ctx.guild.get_member(captain).move_to(selected_channel)
+            #move player
+            for player in game.get_players(captain):
+                if ctx.guild.get_member(player).voice != None:
+                    await ctx.guild.get_member(player).move_to(selected_channel)
 
+    @commands.command(name='move', aliases=['return'])
+    async def move_command(self, ctx):
+        """ move gamers to a voice channel
+        """ 
+        voice_channels = ctx.guild.voice_channels
+        if len(voice_channels) == 0:
+            await ctx.send("No voice channels to move players")
+        
+        game = data(ctx.guild.id)
+        message = '```\n'
+        message += '\n'.join('{}. {}'.format(chr(k[0]), k[1]) for k in enumerate(voice_channels, start=A_EMOJI))
+        message += '```'
+        message = await ctx.send(message)
+        choice = await react_prompt_response(self.bot, ctx.author, message, reacts=self.emoji_list(len(voice_channels)))
+
+        voice = voice_channels[choice]
+        for gamer in game.gamers:
+            #move gamers
+            if ctx.guild.get_member(gamer).voice != None:
+                await ctx.guild.get_member(gamer).move_to(voice)
+ 
 
     @commands.command(name='show', aliases = ['s', 'list', 'print', 'display'])
     async def print_command(self, ctx):
@@ -136,7 +176,7 @@ class game(commands.Cog):
             game.turn = game.captains[pick % len(game.captains)]
 
             if game.picks != 1:
-                choice = await react_prompt_response(self.bot, self.bot.get_user(game.turn), self.game_msg[ctx.guild.id], reacts=self.emoji_list(game))
+                choice = await react_prompt_response(self.bot, self.bot.get_user(game.turn), self.game_msg[ctx.guild.id], reacts=self.emoji_list(game.picks))
             else:
                 choice = 0
             # add player to their team
@@ -177,7 +217,7 @@ class game(commands.Cog):
         if game.picks != 0:
             message += '```\n'
             for spot in range(game.picks):
-                message += (f'{chr(spot + 127462)}. ')
+                message += (f'{chr(spot + A_EMOJI)}. ')
                 if spot < game.picks:
                     discord_id = game.get_agent(spot)
                     message += (f'{self.bot.get_user(discord_id).name}')
@@ -196,7 +236,9 @@ class game(commands.Cog):
                 message += ('\n')
             message += '\n```'
         if game.picks == 0:
-            message += f'**{self.bot.get_user(game.turn).name} picked last, they get priority picking sides.**\n'
+            message += f'**{self.bot.get_user(game.turn).name} picked last**, they get priority picking sides.\n'
+            message += f'Use `$play` to switch voice channels\n'
+
 
         return message
 
@@ -207,9 +249,9 @@ class game(commands.Cog):
             logging.info(f'No game message found on {ctx.guild.name}, printing new one')
         self.game_msg[ctx.guild.id] = await ctx.send(message)
     
-    def emoji_list(self, game: data):
+    def emoji_list(self, num):
         emojis = {}
-        for index in range(game.picks):
+        for index in range(num):
             emojis[chr(index + A_EMOJI)] = index
         return emojis
 

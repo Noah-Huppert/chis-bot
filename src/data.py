@@ -70,6 +70,11 @@ class data():
         self.load()
         self.data['agents'] = people
         self.save()
+    
+    @property
+    def gamers(self):
+        self.load()
+        return self.data['gamers']
 
     @property
     def captains(self):
