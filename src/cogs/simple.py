@@ -11,12 +11,21 @@ class simple(commands.Cog):
 
     @commands.command(name='kill', aliases=['k'], hidden=True)
     async def kill_command(self,ctx):
-        """ owner command to kill the bot
+        """ kill the bot [owner-only]
         """
         if await self.bot.is_owner(ctx.message.author):
             sys.exit(0)
         await ctx.send('Weakling')
 
+    @commands.command(name='set', aliases=[], hidden=True)
+    async def set_command(self, ctx, type='spam', channel=None):
+        """ set channel message spam [owner-only]
+        """
+        if not await self.bot.is_owner(ctx.message.author):
+            return
+        if type == 'spam':
+            pass
+        
     @commands.command(name='hello', aliases=['hi'])
     async def hi_command(self, ctx):
         """ Will send a friendly message back to you.

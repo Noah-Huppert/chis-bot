@@ -14,7 +14,7 @@ class data():
         if os.path.exists(os.path.dirname(__file__) + f'/data/{self.server}.json'):
             self.load()
         else:
-            self.start()
+            self.init()
             self.save()
 
     def load(self):
@@ -25,14 +25,27 @@ class data():
         with open(os.path.dirname(__file__) + f'/data/{self.server}.json', 'w') as f:
             json.dump(self.data, f, indent=4)
     
-    def start(self, *args, **kwargs):
+    def init(self):
+        # game data
         self.data['title'] = kwargs.get('title', "")
         self.data['spots'] = kwargs.get('spots', DEFAULT_GAME_SIZE)
         self.data['gamers'] = []
         self.data['agents'] = []
         self.data['captains'] = OrderedDict()
         self.data['turn'] = None
+        # other
         self.data['info'] = {} # dict of user_ids where value is dict
+        self.data['set'] = {}
+        self.save()
+
+    def start(self, *args, **kwargs):
+        self.load()
+        self.data['title'] = kwargs.get('title', "")
+        self.data['spots'] = kwargs.get('spots', DEFAULT_GAME_SIZE)
+        self.data['gamers'] = []
+        self.data['agents'] = []
+        self.data['captains'] = OrderedDict()
+        self.data['turn'] = None
         self.save()
 
     @property
