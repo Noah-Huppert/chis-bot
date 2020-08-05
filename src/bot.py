@@ -4,7 +4,8 @@ import discord
 from discord.ext import commands
 
 import json
-import os, sys
+import os
+import sys
 import shutil
 import random
 from functools import reduce
@@ -17,8 +18,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger('root')
-log_handler = RotatingFileHandler('bot.log', maxBytes=1024*1024*5, backupCount=2)
-logging.basicConfig(level=logging.INFO, handlers=[log_handler, logging.StreamHandler()])
+log_handler = RotatingFileHandler(
+    'bot.log', maxBytes=1024*1024*5, backupCount=2)
+logging.basicConfig(level=logging.INFO, handlers=[
+                    log_handler, logging.StreamHandler()])
+
 
 class ChisBot(commands.Bot):
     def __init__(self, *args, **kwargs):
@@ -29,6 +33,7 @@ class ChisBot(commands.Bot):
 
     async def on_ready(self):
         logging.info(f'Logged in as "{self.user}".')
+
 
 with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
     config = json.load(f)

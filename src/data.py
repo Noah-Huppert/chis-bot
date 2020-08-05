@@ -7,6 +7,7 @@ from collections import OrderedDict
 
 DEFAULT_GAME_SIZE = 5
 
+
 class data():
     def __init__(self, server):
         self.server = server
@@ -24,7 +25,7 @@ class data():
     def save(self):
         with open(os.path.dirname(__file__) + f'/data/{self.server}.json', 'w') as f:
             json.dump(self.data, f, indent=4)
-    
+
     def start(self, *args, **kwargs):
         self.data['title'] = kwargs.get('title', "")
         self.data['spots'] = kwargs.get('spots', DEFAULT_GAME_SIZE)
@@ -70,7 +71,7 @@ class data():
         self.load()
         self.data['agents'] = people
         self.save()
-    
+
     @property
     def gamers(self):
         self.load()
@@ -81,7 +82,7 @@ class data():
         self.load()
         cap_list = list(self.data['captains'].keys())
         return list(map(int, cap_list))
-    
+
     @captains.setter
     def captains(self, args):
         self.load()
@@ -98,12 +99,12 @@ class data():
         for k in keys:
             self.data['captains'][k] = []
         self.save()
-   
+
     @property
     def turn(self):
         self.load()
         return self.data['turn']
-            
+
     @turn.setter
     def turn(self, captain):
         self.load()
@@ -113,7 +114,7 @@ class data():
     def get_gamer(self, num):
         self.load()
         return self.data['gamers'][num]
-    
+
     def get_agent(self, num):
         self.load()
         return self.data['agents'][num]
@@ -150,4 +151,4 @@ class data():
             self.data['gamers'].remove(user.id)
             self.save()
             return True
-        return  False
+        return False

@@ -5,12 +5,13 @@ import sys
 import random
 from data import data
 
+
 class simple(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name='kill', aliases=['k'], hidden=True)
-    async def kill_command(self,ctx):
+    async def kill_command(self, ctx):
         """ owner command to kill the bot
         """
         if await self.bot.is_owner(ctx.message.author):
@@ -34,17 +35,17 @@ class simple(commands.Cog):
     async def flip_command(self, ctx):
         """ flip a coin
         """
-        if random.randint(0,1) == 0:
+        if random.randint(0, 1) == 0:
             await ctx.send('Heads')
             return
         await ctx.send('Tails')
 
-    @commands.command(name='roll', aliases= ['die', 'dice'])
+    @commands.command(name='roll', aliases=['die', 'dice'])
     async def roll_command(self, ctx, num: int):
         """ roll 'n' sided die
         """
         await ctx.send(f'Rolled: {random.randint(0,num)}')
-    
+
     @commands.command(name='trans', aliases=['queen', 'king'])
     async def trans_command(self, ctx):
         """ The rat assumes their true identity.
@@ -55,6 +56,7 @@ class simple(commands.Cog):
             await ctx.guild.me.edit(nick='Rat King')
         else:
             await ctx.guild.me.edit(nick='Rat Queen')
+
 
 def setup(bot):
     bot.add_cog(simple(bot))
