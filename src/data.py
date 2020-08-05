@@ -27,15 +27,15 @@ class data():
     
     def init(self):
         # game data
-        self.data['title'] = kwargs.get('title', "")
-        self.data['spots'] = kwargs.get('spots', DEFAULT_GAME_SIZE)
+        self.data['title'] = ""
+        self.data['spots'] = DEFAULT_GAME_SIZE
         self.data['gamers'] = []
         self.data['agents'] = []
         self.data['captains'] = OrderedDict()
         self.data['turn'] = None
         # other
         self.data['info'] = {} # dict of user_ids where value is dict
-        self.data['set'] = {}
+        # self.data['set'] = {}
         self.save()
 
     def start(self, *args, **kwargs):

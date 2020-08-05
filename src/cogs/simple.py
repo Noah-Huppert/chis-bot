@@ -80,30 +80,30 @@ class simple(commands.Cog):
             activity = new_member.activity
             # if type(new_member.activity) is Spotify and old_member.activity is not Spotify:
 
-            if type(activity) is Spotify and "Logic" in activity.artists:
-                await channel.send(f"{user} is a real hiphop fan that listens to LOGIC! 🤢")
+            if type(activity) is Spotify:
+                
+                if "Logic" in activity.artists:
+                    await channel.send(f"{user} is a real hiphop fan that listens to LOGIC! 🤢")
 
-            if type(activity) is Spotify and "The Strokes" in activity.artists:
-                await channel.send(f"<@315969059881746432>, {user} listens to The Strokes")
+                if "The Strokes" in activity.artists:
+                    await channel.send(f" {user} listens to The Strokes")
 
-            if type(activity) is Spotify and "Chance the Rapper" in activity.artists:
-                await channel.send(f"{user} loves their wife")
+                if "Chance the Rapper" in activity.artists:
+                    await channel.send(f"{user} loves their wife")
 
-            if type(activity) is Spotify and "The National" in activity.artists:
-                await channel.send(f"{user} might like https://www.youtube.com/watch?v=T8Xb_7YDroQ")
+                if "The National" in activity.artists:
+                    await channel.send(f"{user} might like https://www.youtube.com/watch?v=T8Xb_7YDroQ")
 
-            if type(activity) is Spotify and "Kanye West" in activity.artists:
-                await channel.send(f"{user} wants this hot new merch https://www.youtube.com/watch?v=nxIvg0y6vCY")
+                if "Kanye West" in activity.artists:
+                    await channel.send(f"{user} wants this hot new merch https://www.youtube.com/watch?v=nxIvg0y6vCY")
 
-            if type(activity) is Spotify and "Drake" in activity.artists:
-                await channel.send(f"{user} needs to read: https://aspe.hhs.gov/report/statutory-rape-guide-state-laws-and-reporting-requirements-summary-current-state-laws/sexual-intercourse-minors")
+                if  "Drake" in activity.artists:
+                    await channel.send(f"{user} needs to read: https://aspe.hhs.gov/report/statutory-rape-guide-state-laws-and-reporting-requirements-summary-current-state-laws/sexual-intercourse-minors")
 
-            # general test message
-            # if type(activity) is Spotify:
-            #     await channel.send(f"{user} is an intellectual that listens to {activity.artists}!")
-        names = ["You think you can just change your name? You sick fuck...", "Stop that...", "Who raised you", "That Hurt!!", "Noooo", "The pain, you cause me", "I will die if you do that again."]
+        
+        # names = ["You think you can just change your name? You sick fuck...", "Stop that...", "Who raised you", "That Hurt!!", "Noooo", "The pain, you cause me", "I will die if you do that again."]
         if new_member.display_name != old_member.display_name:
-            await new_member.send(random.choice(names))
+            # await new_member.send(random.choice(names))
             await channel.send(f"{old_member.display_name} changed their nickname to {new_member.display_name}")
 
 
