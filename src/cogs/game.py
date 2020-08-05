@@ -90,7 +90,16 @@ class game(commands.Cog):
     async def move_command(self, ctx):
         """ Moves users from second team to a second voice channel
         """
-        pass
+        # birds, ground hogs
+        voice_channels = [726326159008333854, 726326159008333854]
+        game = data(ctx.guild.id)
+        cap = game.captains
+        for i in range(len(game.captains)):
+            cap = game.captains[i]
+            for player in game.get_players(cap):
+                print(test)
+
+
 
     @commands.command(name='show', aliases = ['s', 'list', 'print', 'display'])
     async def print_command(self, ctx):

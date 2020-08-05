@@ -117,6 +117,10 @@ class data():
         self.load()
         return len(self.data['captains'][str(captain)])
 
+    def get_players(self, captain):
+        self.load()
+        return self.data['captains'][str(captain)]
+
     def get_player(self, captain, num):
         self.load()
         return self.data['captains'][str(captain)][num]
