@@ -26,7 +26,7 @@ pip install -r requirements.txt
 
 Make your own config.json file, this will contain the bot token, prefix, and list of owners.
 
-See [config.json.example](config.json.example).
+See [config-example.json](config file).
 
 
 ## Run
