@@ -17,20 +17,25 @@ class game(commands.Cog):
         self.bot = bot
         self.game_msg = {}
 
-    @commands.command(name='side')
+    @commands.command(name='side', aliases=[])
     async def side_command(self, ctx):
         """ picks a side Attackers/Defenders
         """
-        if random.randint(0, 1) == 0:
+        side = random.randint(0, 1)
+        if side:
             await ctx.send('Attackers')
-            return
-        await ctx.send('Defenders')
+        else:
+            await ctx.send('Defenders')
+        logging.info(f'{ctx.author} got side ' +
+                     ('Attackers' if side else f'Defenders'))
 
     @commands.command(name='map')
     async def map_command(self, ctx):
         """ picks a Valorant map
         """
-        await ctx.send(random.choice(MAPS))
+        picked_map = random.choice(MAPS)
+        logging.info(f'{ctx.author} got map {picked_map}')
+        await ctx.send(picked_map)
 
     @commands.command(name='plan', aliases=['p'])
     async def plan_command(self, ctx, spots=5, *args):
@@ -42,7 +47,8 @@ class game(commands.Cog):
 
         game = data(ctx.guild.id)
         game.start(spots=spots, title=title)
-        logging.info(f'{ctx.author.display_name} tried to make a game')
+        logging.info(
+            f'{ctx.author} is planning a {spots} player game called "{title}"')
         await self.update_message(ctx, self.print_message(game))
 
     @commands.command(name='add', aliases=['a', 'join'])
@@ -52,6 +58,8 @@ class game(commands.Cog):
         game = data(ctx.guild.id)
         if len(args) == 0:
             args = [ctx.author]
+        # TODO fix logging message
+        logging.info(f'{ctx.author} tried to add {*args,} to the plan')
 
         for user in args:
             if game.people < game.spots:
@@ -70,6 +78,8 @@ class game(commands.Cog):
         if len(args) == 0:
             args = [ctx.author]
 
+        logging.info(f'{ctx.author} tried to remove {*args,} from the plan')
+
         for user in args:
             if game.del_gamer(user):
                 await self.update_message(ctx, self.print_message(game))
@@ -83,12 +93,18 @@ class game(commands.Cog):
         game.title = ""
         if len(args) > 0:
             game.title = ' '.join(arg for arg in args[0:])
+
+        logging.info(f'{ctx.author} renamed the game to {game.title}')
+
         await self.update_message(ctx, self.print_message(game))
 
     @commands.command(name='play', aliases=[])
     async def play_command(self, ctx):
         """ moves teams to respective voice channels
         """
+
+        logging.info(f'{ctx.author} used the "play" command')
+
         game = data(ctx.guild.id)
         if game.turn == None:
             await ctx.send("Teams have not been picked")
@@ -121,10 +137,13 @@ class game(commands.Cog):
                 if ctx.guild.get_member(player).voice != None:
                     await ctx.guild.get_member(player).move_to(selected_channel)
 
-    @commands.command(name='move', aliases=['return'])
+    @commands.command(name='move', aliases=['return', 'm'])
     async def move_command(self, ctx):
         """ move gamers to a voice channel
         """
+
+        logging.info(f'{ctx.author} used the move command ')
+
         voice_channels = ctx.guild.voice_channels
         if len(voice_channels) == 0:
             await ctx.send("No voice channels to move players")
@@ -147,6 +166,8 @@ class game(commands.Cog):
     async def print_command(self, ctx):
         """ display current gamers
         """
+        logging.info(f'{ctx.author} printed the game message')
+
         game = data(ctx.guild.id)
         await self.update_message(ctx, self.print_message(game))
 
@@ -154,6 +175,8 @@ class game(commands.Cog):
     async def team_command(self, ctx, *args: discord.User):
         """ @captains to start team selection
         """
+        logging.info(f'{ctx.author} used "team" command')
+
         if len(args) == 0:
             await ctx.send("Please enter team captains")
             return
@@ -182,6 +205,8 @@ class game(commands.Cog):
             else:
                 choice = 0
             # add player to their team
+            logging.info(
+                f'{self.bot.get_user(game.turn)} added {game.get_player(game.turn, choice)} to their team')
             game.add_player(game.turn, choice)
             del self.game_msg[ctx.guild.id]
 
@@ -203,7 +228,7 @@ class game(commands.Cog):
                 message += (f'{self.bot.get_user(discord_id).name}')
             message += ('\n')
         message += '\n```'
-        message += '**Basic Commands**: plan, add, del, show, team'
+        message += '**Basic Commands**: plan, add, del, show, team, move '
         message += '[`$help game` for more info]\n'
 
         return message
@@ -246,9 +271,6 @@ class game(commands.Cog):
     async def update_message(self, ctx, message):
         if ctx.guild.id in self.game_msg:
             await self.game_msg[ctx.guild.id].delete()
-        else:
-            logging.info(
-                f'No game message found on {ctx.guild.name}, printing new one')
         self.game_msg[ctx.guild.id] = await ctx.send(message)
 
     def emoji_list(self, num):
