@@ -7,6 +7,7 @@ from collections import OrderedDict
 
 DEFAULT_GAME_SIZE = 5
 
+
 class data():
     def __init__(self, server):
         self.server = server
@@ -33,9 +34,7 @@ class data():
         self.data['agents'] = []
         self.data['captains'] = OrderedDict()
         self.data['turn'] = None
-        # other
         self.data['info'] = {} # dict of user_ids where value is dict
-        # self.data['set'] = {}
         self.save()
 
     def start(self, *args, **kwargs):
@@ -86,11 +85,16 @@ class data():
         self.save()
 
     @property
+    def gamers(self):
+        self.load()
+        return self.data['gamers']
+
+    @property
     def captains(self):
         self.load()
         cap_list = list(self.data['captains'].keys())
         return list(map(int, cap_list))
-    
+
     @captains.setter
     def captains(self, args):
         self.load()
@@ -107,12 +111,12 @@ class data():
         for k in keys:
             self.data['captains'][k] = []
         self.save()
-   
+
     @property
     def turn(self):
         self.load()
         return self.data['turn']
-            
+
     @turn.setter
     def turn(self, captain):
         self.load()
@@ -122,7 +126,7 @@ class data():
     def get_gamer(self, num):
         self.load()
         return self.data['gamers'][num]
-    
+
     def get_agent(self, num):
         self.load()
         return self.data['agents'][num]
@@ -130,6 +134,10 @@ class data():
     def team_size(self, captain):
         self.load()
         return len(self.data['captains'][str(captain)])
+
+    def get_players(self, captain):
+        self.load()
+        return self.data['captains'][str(captain)]
 
     def get_player(self, captain, num):
         self.load()
@@ -155,4 +163,4 @@ class data():
             self.data['gamers'].remove(user.id)
             self.save()
             return True
-        return  False
+        return False
