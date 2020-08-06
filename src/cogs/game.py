@@ -205,8 +205,6 @@ class game(commands.Cog):
             else:
                 choice = 0
             # add player to their team
-            logging.info(
-                f'{self.bot.get_user(game.turn)} added {game.get_player(game.turn, choice)} to their team')
             game.add_player(game.turn, choice)
             del self.game_msg[ctx.guild.id]
 
