@@ -16,6 +16,7 @@ class simple(commands.Cog):
         """
         if await self.bot.is_owner(ctx.message.author):
             sys.exit(0)
+        logging.info(f'{ctx.author} tried to kill the bot and failed')
         await ctx.send('Weakling')
 
     @commands.command(name='hello', aliases=['hi'])
@@ -25,37 +26,37 @@ class simple(commands.Cog):
         logging.info(f'Said hello to {ctx.author.display_name}')
         await ctx.send('Sup, chad ;)')
 
-    @commands.command(name='test')
-    async def test_command(self, ctx, *args):
-        game = data(ctx.guild.id)
-        game.test = args
-        await ctx.send('testing')
-
-    @commands.command(name='flip', aliases=['f', 'coin'])
+    @commands.command(name='flip', aliases=['coin'])
     async def flip_command(self, ctx):
         """ flip a coin
         """
-        if random.randint(0, 1) == 0:
+        coin = random.randint(0, 1)
+        if coin:
             await ctx.send('Heads')
-            return
-        await ctx.send('Tails')
+        else:
+            await ctx.send('Tails')
+        logging.info(f'{ctx.author} flipped a coin and got ' +
+                     ('heads' if coin else f'tails'))
 
-    @commands.command(name='roll', aliases=['die', 'dice'])
+    @commands.command(name='roll', aliases=['dice'])
     async def roll_command(self, ctx, num: int):
         """ roll 'n' sided die
         """
-        await ctx.send(f'Rolled: {random.randint(0,num)}')
+        roll = random.randint(0, num)
+        await ctx.send(f'Rolled: {roll}')
+        logging.info(
+            f'{ctx.author.display_name} rolled a "{num}" sided die and got "{roll}"')
 
     @commands.command(name='trans', aliases=['queen', 'king'])
     async def trans_command(self, ctx):
         """ The rat assumes their true identity.
         """
-        logging.info(f'I am {ctx.guild.me.display_name}')
-        me = ctx.guild.me
         if "Queen" in ctx.guild.me.display_name:
             await ctx.guild.me.edit(nick='Rat King')
         else:
             await ctx.guild.me.edit(nick='Rat Queen')
+        logging.info(
+            f'{ctx.author} changed the rats identity to "{ctx.guild.me.display_name}"')
 
 
 def setup(bot):

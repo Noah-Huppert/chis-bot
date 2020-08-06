@@ -1,6 +1,9 @@
 # Chis Discord Bot
 
-A simple chis bot.
+A simple, "chis-bot". 
+
+This bot was created to help a small group friends plan Valorant 10-mans.
+Hopefully one day chis-bot will become something bigger. :)
 
 
 ## Installation
@@ -33,19 +36,23 @@ See [config.json.example](config.json.example).
 ## Usage
 
 ```
+# bot commands
 game:
   add    @users to add them to the game.
   del    @users to remove them from the game
-  move   Moves users from second team to a second voice channel
+  map    picks a Valorant map
+  move   move gamers to a voice channel
   plan   takes a number of players and creates a new game.
+  play   moves teams to respective voice channels
   rename Renames the current game
   show   display current gamers
+  side   picks a side Attackers/Defenders
   team   @captains to start team selection
 simple:
+  flip   flip a coin
   hello  Will send a friendly message back to you.
-  pet    Bellies out.
+  roll   roll 'n' sided die
   trans  The rat assumes their true identity.
-  user   Is this you dawg?
 ```
 
 ## License
