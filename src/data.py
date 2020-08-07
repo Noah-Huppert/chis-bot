@@ -3,10 +3,10 @@ import os
 import copy
 import random
 import logging
+from datetime import datetime
 from collections import OrderedDict
 
 DEFAULT_GAME_SIZE = 5
-
 
 class data():
     def __init__(self, server):
@@ -122,6 +122,34 @@ class data():
         self.load()
         self.data['turn'] = captain
         self.save()
+
+    @property
+    def info(self):
+        self.load()
+        user_list = list(self.data['info'].keys())
+        return list(map(int, user_list))
+
+    def get_birthday(self, user):
+        self.load()
+        self.info_check(user, 'birthday')
+        try:
+            bday = self.data['info'][str(user)]['birthday']
+        except KeyError:
+            raise
+        return datetime.fromisoformat(bday)
+
+    def set_birthday(self, user, birthday: datetime):
+        self.load()
+        self.info_check(user, 'birthday')
+        self.data['info'][user]['birthday'] = birthday.isoformat()
+        self.save()
+    
+    def info_check(self, user, atr=None):
+        self.load()
+        if user not in self.data['info']:
+            self.data['info'][user] = {}
+        if atr != None and atr not in self.data['info'][user]:
+            self.data['info'][user][atr] = None
 
     def get_gamer(self, num):
         self.load()

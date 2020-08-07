@@ -7,13 +7,12 @@ from data import data
 from discord import Spotify
 
 
-
 class simple(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name='kill', aliases=['k'], hidden=True)
-    async def kill_command(self,ctx):
+    async def kill_command(self, ctx):
         """ kill the bot [owner-only]
         """
         if await self.bot.is_owner(ctx.message.author):
@@ -29,7 +28,7 @@ class simple(commands.Cog):
             return
         if type == 'spam':
             pass
-        
+
     @commands.command(name='hello', aliases=['hi'])
     async def hi_command(self, ctx):
         """ Will send a friendly message back to you.
@@ -69,7 +68,6 @@ class simple(commands.Cog):
         logging.info(
             f'{ctx.author} changed the rats identity to "{ctx.guild.me.display_name}"')
 
-
     @commands.Cog.listener()
     async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
         channel = self.bot.get_channel(724656035373121558)
@@ -81,10 +79,9 @@ class simple(commands.Cog):
             logging.info(f'{new_member} activities has changed')
             user = new_member.display_name
             activity = new_member.activity
-            # if type(new_member.activity) is Spotify and old_member.activity is not Spotify:
 
             if type(activity) is Spotify:
-                
+
                 if "Logic" in activity.artists:
                     await channel.send(f"{user} is a real hiphop fan that listens to LOGIC! 🤢")
 
@@ -100,13 +97,10 @@ class simple(commands.Cog):
                 if "Kanye West" in activity.artists:
                     await channel.send(f"{user} wants this hot new merch https://www.youtube.com/watch?v=nxIvg0y6vCY")
 
-                if  "Drake" in activity.artists:
+                if "Drake" in activity.artists:
                     await channel.send(f"{user} needs to read: https://aspe.hhs.gov/report/statutory-rape-guide-state-laws-and-reporting-requirements-summary-current-state-laws/sexual-intercourse-minors")
 
-        
-        # names = ["You think you can just change your name? You sick fuck...", "Stop that...", "Who raised you", "That Hurt!!", "Noooo", "The pain, you cause me", "I will die if you do that again."]
         if new_member.display_name != old_member.display_name:
-            # await new_member.send(random.choice(names))
             await channel.send(f"{old_member.display_name} changed their nickname to {new_member.display_name}")
 
 
