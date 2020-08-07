@@ -41,12 +41,16 @@ class info(commands.Cog):
     #86400 seconds in a day
     @tasks.loop(seconds=15)
     async def notify_birthday(self):
+        # TODO fix datetime syntax
         current = dt.now()
-        offset = dt.now() + datetime.timedelta(days = 2)
+        offset = dt.now() + datetime.timedelta(days = 3)
         time_range = offset.timestamp() - current.timestamp() 
         
+        # TODO replace with data file (set command)
         channel = self.bot.get_channel(724656035373121558)
         
+        
+        #TODO Notify 3 days before bday and on bday
         for guild in self.bot.guilds:
             info = data(guild.id)
             for user in info.info:
@@ -54,7 +58,7 @@ class info(commands.Cog):
                 propagated_birthday = birthday.replace(year=current.year)
                 if  propagated_birthday > current and propagated_birthday.timestamp() - current.timestamp() < time_range:
                     logging.info('It\'s someones birthday!!')
-                    await channel.send(f'{self.bot.get_user(user).display_name}\'s birthday is in less than 2 days!!!')
+                    await channel.send(f'{self.bot.get_user(user).display_name}\'s birthday is in less than 3 days!!!')
 
     @notify_birthday.before_loop
     async def before_notify_birthday(self):

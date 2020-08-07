@@ -35,6 +35,7 @@ class data():
         self.data['captains'] = OrderedDict()
         self.data['turn'] = None
         self.data['info'] = {} # dict of user_ids where value is dict
+        self.data['set'] = {}
         self.save()
 
     def start(self, *args, **kwargs):
@@ -150,6 +151,11 @@ class data():
             self.data['info'][user] = {}
         if atr != None and atr not in self.data['info'][user]:
             self.data['info'][user][atr] = None
+
+    def set_command(self, command, value):
+        self.load()
+        self.data['set']['command'] = value
+        self.save()
 
     def get_gamer(self, num):
         self.load()

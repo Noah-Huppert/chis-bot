@@ -183,6 +183,9 @@ class game(commands.Cog):
         if len(set(args)) != len(args):
             await ctx.send("Captains must be different")
             return
+
+        # TODO check, captains must be part of the game
+
         game = data(ctx.guild.id)
         game.captains = args
         await self.select_teams(ctx, game)
@@ -268,6 +271,7 @@ class game(commands.Cog):
             await self.game_msg[ctx.guild.id].delete()
         self.game_msg[ctx.guild.id] = await ctx.send(message)
 
+    # TODO make a utils file
     def emoji_list(self, num):
         emojis = {}
         for index in range(num):
