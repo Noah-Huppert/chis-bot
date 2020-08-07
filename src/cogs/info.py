@@ -6,7 +6,6 @@ from datetime import datetime as dt
 from dateutil import parser
 import logging
 
-
 class info(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -42,22 +41,20 @@ class info(commands.Cog):
     #86400 seconds in a day
     @tasks.loop(seconds=15)
     async def notify_birthday(self):
-        pass
-        # current = dt.now()
-        # offset = dt.now() + datetime.timedelta(days = 2)
-        # time_range = offset.timestamp() - current.timestamp() 
+        current = dt.now()
+        offset = dt.now() + datetime.timedelta(days = 2)
+        time_range = offset.timestamp() - current.timestamp() 
         
-        # guild = self.bot.get_guild(315969566411063297)
-        # channel = self.bot.get_channel(724656035373121558)
-
-        # info = data(guild.id)
-
-        # for user in info.info:
-        #     birthday = info.get_birthday(user)
-        #     propagated_birthday = birthday.replace(year=current.year)
-        #     if  propagated_birthday > current and propagated_birthday.timestamp() - current.timestamp() < time_range:
-        #         logging.info('It\'s someones birthday!!')
-        #         await channel.send(f'{self.bot.get_user(user).display_name}\'s birthday is in less than 2 days!!!')
+        channel = self.bot.get_channel(724656035373121558)
+        
+        for guild in self.bot.guilds:
+            info = data(guild.id)
+            for user in info.info:
+                birthday = info.get_birthday(user)
+                propagated_birthday = birthday.replace(year=current.year)
+                if  propagated_birthday > current and propagated_birthday.timestamp() - current.timestamp() < time_range:
+                    logging.info('It\'s someones birthday!!')
+                    await channel.send(f'{self.bot.get_user(user).display_name}\'s birthday is in less than 2 days!!!')
 
     @notify_birthday.before_loop
     async def before_notify_birthday(self):

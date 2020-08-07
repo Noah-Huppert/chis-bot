@@ -5,6 +5,9 @@ import sys
 import random
 from data import data
 from discord import Spotify
+from discord_eprompt import ReactPromptPreset, react_prompt_response
+
+A_EMOJI = 127462
 
 
 class simple(commands.Cog):
@@ -26,8 +29,25 @@ class simple(commands.Cog):
         """
         if not await self.bot.is_owner(ctx.message.author):
             return
+
+        channels = ctx.guild.text_channels
+        message = '```\n'
+        message += '\n'.join('{}. {}'.format(chr(k[0]), k[1])
+                                for k in enumerate(channels, start=A_EMOJI))
+        message += '```'
+        message = await ctx.send(message)
+        choice = await react_prompt_response(self.bot, ctx.author, message, reacts=self.emoji_list(len(channels)))
+
         if type == 'spam':
             pass
+        if type == 'birthday' or type == 'bday':
+            pass
+
+    def emoji_list(self, num):
+        emojis = {}
+        for index in range(num):
+            emojis[chr(index + A_EMOJI)] = index
+        return emojis
 
     @commands.command(name='hello', aliases=['hi'])
     async def hi_command(self, ctx):
