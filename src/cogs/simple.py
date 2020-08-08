@@ -30,6 +30,7 @@ class simple(commands.Cog):
         if not await self.bot.is_owner(ctx.message.author):
             return
 
+        simple = data(ctx.guild.id)
         channels = ctx.guild.text_channels
         message = '```\n'
         message += '\n'.join('{}. {}'.format(chr(k[0]), k[1])
@@ -40,9 +41,9 @@ class simple(commands.Cog):
 
         # TODO implement data file
         if type == 'spam':
-            pass
+            simple.set_command('spam', channels[choice].id)
         if type == 'birthday' or type == 'bday':
-            pass
+            simple.set_command('birthday', channels[choice].id)
 
     def emoji_list(self, num):
         emojis = {}
@@ -91,23 +92,27 @@ class simple(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
-        channel = self.bot.get_channel(724656035373121558)
-        # exit if user if not part of the server
-        if channel.guild.id != old_member.guild.id:
+        guild = new_member.guild
+        info = data(guild.id)
+        try:
+            channel = self.bot.get_channel(info.get_command('spam'))
+        except KeyError:
+            # message is annoying
+            # logging.info(f'No channel to send "spam" command on {guild.name}')
             return
 
         if new_member.activity:
-            logging.info(f'{new_member} activities has changed')
             user = new_member.display_name
             activity = new_member.activity
 
             if type(activity) is Spotify:
+                logging.info(f'{new_member} is listening to Spotify')
 
                 if "Logic" in activity.artists:
                     await channel.send(f"{user} is a real hiphop fan that listens to LOGIC! 🤢")
 
                 if "The Strokes" in activity.artists:
-                    await channel.send(f" {user} listens to The Strokes")
+                    await channel.send(f"{user} listens to The Strokes")
 
                 if "Chance the Rapper" in activity.artists:
                     await channel.send(f"{user} loves their wife")

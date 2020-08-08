@@ -154,9 +154,17 @@ class data():
 
     def set_command(self, command, value):
         self.load()
-        self.data['set']['command'] = value
+        self.data['set'][command] = value
         self.save()
 
+    def get_command(self, command):
+        self.load()
+        try:
+            value = self.data['set'][command]
+        except KeyError:
+            raise
+        return value
+        
     def get_gamer(self, num):
         self.load()
         return self.data['gamers'][num]
