@@ -8,6 +8,7 @@ from collections import OrderedDict
 
 DEFAULT_GAME_SIZE = 5
 
+
 class data():
     def __init__(self, server):
         self.server = server
@@ -25,7 +26,7 @@ class data():
     def save(self):
         with open(os.path.dirname(__file__) + f'/data/{self.server}.json', 'w') as f:
             json.dump(self.data, f, indent=4)
-    
+
     def init(self):
         # game data
         self.data['title'] = ""
@@ -34,7 +35,8 @@ class data():
         self.data['agents'] = []
         self.data['captains'] = OrderedDict()
         self.data['turn'] = None
-        self.data['info'] = {} # dict of user_ids where value is dict
+        # other data
+        self.data['info'] = {}  # dict of user_ids where value is dict
         self.data['set'] = {}
         self.save()
 
@@ -144,7 +146,7 @@ class data():
         self.info_check(user, 'birthday')
         self.data['info'][user]['birthday'] = birthday.isoformat()
         self.save()
-    
+
     def info_check(self, user, atr=None):
         self.load()
         if user not in self.data['info']:
@@ -164,7 +166,7 @@ class data():
         except KeyError:
             raise
         return value
-        
+
     def get_gamer(self, num):
         self.load()
         return self.data['gamers'][num]

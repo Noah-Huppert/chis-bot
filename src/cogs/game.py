@@ -184,9 +184,13 @@ class game(commands.Cog):
             await ctx.send("Captains must be different")
             return
 
-        # TODO check, captains must be part of the game
-
         game = data(ctx.guild.id)
+
+        for cap in args:
+            if cap.id not in game.gamers:
+                await ctx.send("Captains must be part of the game")
+                return
+
         game.captains = args
         await self.select_teams(ctx, game)
         del self.game_msg[ctx.guild.id]
