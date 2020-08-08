@@ -6,6 +6,8 @@ from datetime import datetime as dt
 from dateutil import parser
 import logging
 
+BIRHDAY_RANGE_DAYS = 45
+
 
 class info(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -23,13 +25,15 @@ class info(commands.Cog):
             if user == self.bot.user:
                 curr = datetime.datetime.now()
                 message = '⠀\n'  # blank unicode character
-                message += f'**🎊All Birthdays in {curr.strftime("%B")}🎊**\n'
+                message += f'**🎊All Birthdays in the next {BIRHDAY_RANGE_DAYS} days🎊**\n'
                 message += '```\n'
                 for member in ctx.guild.members:
                     try:
                         bday = info.get_birthday(member.id)
-                        if curr.month == bday.month and bday.day > curr.day and curr.day != bday.day:
-                            message += f'🔸 {member.display_name}:\n   turning {curr.year - bday.year} in {bday.day - curr.day} days ({info.get_birthday(member.id).strftime("%m/%d")}) \n\n'
+                        prop_bday = bday.replace(year=curr.year)
+                        time_delta = prop_bday - curr
+                        if curr < prop_bday and time_delta.days <= BIRHDAY_RANGE_DAYS:
+                            message += f'🔸 {member.display_name}:\n   turning {curr.year - bday.year} in {time_delta.days} days ({info.get_birthday(member.id).strftime("%B %d")}) \n\n'
                     except KeyError:
                         pass
                 message += '```'

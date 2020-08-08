@@ -39,7 +39,6 @@ class simple(commands.Cog):
         message = await ctx.send(message)
         choice = await react_prompt_response(self.bot, ctx.author, message, reacts=self.emoji_list(len(channels)))
 
-        # TODO implement data file
         if type == 'spam':
             simple.set_command('spam', channels[choice].id)
         if type == 'birthday' or type == 'bday':
