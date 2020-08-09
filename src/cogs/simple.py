@@ -5,6 +5,7 @@ import sys
 import random
 from utils import A_EMOJI, emoji_list
 from data import data
+from fuzzywuzzy import fuzz
 from discord import Spotify
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
@@ -71,16 +72,25 @@ class simple(commands.Cog):
         logging.info(
             f'{ctx.author.display_name} rolled a "{num}" sided die and got "{roll}"')
 
-    @commands.command(name='trans', aliases=['queen', 'king'])
-    async def trans_command(self, ctx):
-        """ The rat assumes their true identity.
+    @commands.command(name='user', aliases=[])
+    async def user_command(self, ctx, *args):
+        """ fuzzy matches a discord user
         """
-        if "Queen" in ctx.guild.me.display_name:
-            await ctx.guild.me.edit(nick='Rat King')
-        else:
-            await ctx.guild.me.edit(nick='Rat Queen')
-        logging.info(
-            f'{ctx.author} changed the rats identity to "{ctx.guild.me.display_name}"')
+        logging.info(f'{ctx.author} tried to fuzzy match')
+        user_string = ' '.join(arg for arg in args[0:])
+        
+        best_rating = 0
+        best_member = None
+        for member in ctx.guild.members:
+            rating = fuzz.partial_token_sort_ratio(user_string.lower(), member.display_name.lower())
+            if rating > best_rating:
+                best_rating = rating
+                best_member = member
+        if best_member == None:
+            await ctx.send('No user found')
+            return 
+        await ctx.send(f'The closest user is {best_member.display_name}')
+        
 
     @commands.Cog.listener()
     async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):

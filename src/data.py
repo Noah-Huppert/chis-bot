@@ -138,7 +138,7 @@ class data():
         try:
             bday = self.data['info'][str(user)]['birthday']
         except KeyError:
-            raise
+            return None
         return datetime.fromisoformat(bday)
 
     def set_birthday(self, user, birthday: datetime):

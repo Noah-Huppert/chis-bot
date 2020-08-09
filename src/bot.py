@@ -6,11 +6,6 @@ from discord.ext import commands
 import json
 import os
 import sys
-import shutil
-import random
-from functools import reduce
-import re
-from enum import Enum
 import argparse
 import asyncio
 
@@ -26,6 +21,7 @@ logging.basicConfig(level=logging.INFO,
                     handlers=[file_handler, logging.StreamHandler()],
                     format="%(asctime)s %(levelname)s: [%(funcName)s] %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
 
+# TODO make stable version of bot (one for debugging and one for testing) regular uses $ and debug uses.
 class ChisBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,7 +31,6 @@ class ChisBot(commands.Bot):
 
     async def on_ready(self):
         logging.info(f'Logged in as "{self.user}".')
-        logging.debug("DEBUG MESSAGES ARE WORKING")
 
 
 with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:

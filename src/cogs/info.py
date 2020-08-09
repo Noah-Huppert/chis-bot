@@ -2,11 +2,11 @@ from discord.ext import tasks, commands
 import discord
 from data import data
 import datetime
+from utils import days_left, BIRHDAY_RANGE_IN_DAYS
 from datetime import datetime as dt
 from dateutil import parser
 import logging
 
-BIRHDAY_RANGE_DAYS = 45
 
 
 class info(commands.Cog):
@@ -15,30 +15,36 @@ class info(commands.Cog):
         self.info_msg = {}
         self.notify_birthday.start()
 
+    # TODO dynamically change BIRTHDAY_RANGE_IN_DAYS
     @commands.command(name='birthday', aliases=['bday'])
     async def birthday_command(self, ctx, user: discord.User, *args):
         """ get/set @users birthday
         """
         info = data(ctx.guild.id)
+        
+        if user == self.bot.user:
+            curr = datetime.datetime.now()
+            message = '⠀\n'  # blank unicode character
+            message += f'**🎊All Birthdays in the next {BIRHDAY_RANGE_IN_DAYS} days🎊**\n'
+            message += '```\n'
 
+            members_with_no_bday = filter(lambda user: info.get_birthday(user.id) is not None, ctx.guild.members)
+            sorted_members = sorted(members_with_no_bday, key=lambda user: days_left(info.get_birthday(user.id)))
+
+            for member in sorted_members: #REPLACE ctx.guild.members with the sorted list
+                    bday = info.get_birthday(member.id)
+                    bday_days_left = days_left(bday)
+                    if  bday_days_left <= BIRHDAY_RANGE_IN_DAYS:
+                        if bday.replace(year= curr.year) > curr:
+                            message += f'🔸 {member.display_name}:\n   turning {curr.year - bday.year} in {bday_days_left} days ({info.get_birthday(member.id).strftime("%B %d")}) \n\n'
+                        else:
+                            message += f'🔸 {member.display_name}:\n   turning {curr.year - bday.year + 1} in {bday_days_left} days ({info.get_birthday(member.id).strftime("%B %d")}) \n\n'
+            message += '```'
+            await ctx.send(message)
+            return
+        
         if len(args) == 0:
-            if user == self.bot.user:
-                curr = datetime.datetime.now()
-                message = '⠀\n'  # blank unicode character
-                message += f'**🎊All Birthdays in the next {BIRHDAY_RANGE_DAYS} days🎊**\n'
-                message += '```\n'
-                for member in ctx.guild.members:
-                    try:
-                        bday = info.get_birthday(member.id)
-                        prop_bday = bday.replace(year=curr.year)
-                        time_delta = prop_bday - curr
-                        if curr < prop_bday and time_delta.days <= BIRHDAY_RANGE_DAYS:
-                            message += f'🔸 {member.display_name}:\n   turning {curr.year - bday.year} in {time_delta.days} days ({info.get_birthday(member.id).strftime("%B %d")}) \n\n'
-                    except KeyError:
-                        pass
-                message += '```'
-                await ctx.send(message)
-                return
+            
 
             try:
                 await ctx.send(f'{user.display_name}\'s birthday is `{info.get_birthday(user.id).strftime("%m/%d/%Y")}`')
