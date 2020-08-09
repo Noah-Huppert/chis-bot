@@ -3,10 +3,8 @@ import discord
 import logging
 import random
 from data import data
+from utils import A_EMOJI, MAPS, emoji_list
 from discord_eprompt import ReactPromptPreset, react_prompt_response
-
-A_EMOJI = 127462
-MAPS = ['Haven', 'Split', 'Ascent', 'Bind']
 
 
 class game(commands.Cog):
@@ -55,7 +53,7 @@ class game(commands.Cog):
         game = data(ctx.guild.id)
         if len(args) == 0:
             args = [ctx.author]
-        # TODO fix logging message
+
         logging.info(f'{ctx.author} tried to add {*args,} to the plan')
 
         for user in args:
@@ -124,7 +122,7 @@ class game(commands.Cog):
             message += '```'
             message = await ctx.send(message)
 
-            choice = await react_prompt_response(self.bot, ctx.author, message, reacts=self.emoji_list(len(voice_channels)))
+            choice = await react_prompt_response(self.bot, ctx.author, message, reacts=emoji_list(len(voice_channels)))
             selected_channel = voice_channels[choice]
             # move captain
             if ctx.guild.get_member(captain).voice != None:
@@ -151,7 +149,7 @@ class game(commands.Cog):
                              for k in enumerate(voice_channels, start=A_EMOJI))
         message += '```'
         message = await ctx.send(message)
-        choice = await react_prompt_response(self.bot, ctx.author, message, reacts=self.emoji_list(len(voice_channels)))
+        choice = await react_prompt_response(self.bot, ctx.author, message, reacts=emoji_list(len(voice_channels)))
 
         voice = voice_channels[choice]
         for gamer in game.gamers:
@@ -205,7 +203,7 @@ class game(commands.Cog):
             game.turn = game.captains[pick % len(game.captains)]
 
             if game.picks != 1:
-                choice = await react_prompt_response(self.bot, self.bot.get_user(game.turn), self.game_msg[ctx.guild.id], reacts=self.emoji_list(game.picks))
+                choice = await react_prompt_response(self.bot, self.bot.get_user(game.turn), self.game_msg[ctx.guild.id], reacts=emoji_list(game.picks))
             else:
                 choice = 0
             # add player to their team
@@ -274,14 +272,6 @@ class game(commands.Cog):
         if ctx.guild.id in self.game_msg:
             await self.game_msg[ctx.guild.id].delete()
         self.game_msg[ctx.guild.id] = await ctx.send(message)
-
-    # TODO make a utils file
-    def emoji_list(self, num):
-        emojis = {}
-        for index in range(num):
-            emojis[chr(index + A_EMOJI)] = index
-        return emojis
-
 
 def setup(bot):
     bot.add_cog(game(bot))

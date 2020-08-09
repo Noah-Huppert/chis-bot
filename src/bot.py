@@ -18,11 +18,13 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger('root')
-log_handler = RotatingFileHandler(
-    'bot.log', maxBytes=1024*1024*5, backupCount=2)
-logging.basicConfig(level=logging.INFO, handlers=[
-                    log_handler, logging.StreamHandler()])
 
+file_handler = RotatingFileHandler(
+    'bot.log', maxBytes=1024*1024*5, backupCount=2)
+
+logging.basicConfig(level=logging.INFO,
+                    handlers=[file_handler, logging.StreamHandler()],
+                    format="%(asctime)s %(levelname)s: [%(funcName)s] %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
 
 class ChisBot(commands.Bot):
     def __init__(self, *args, **kwargs):
@@ -33,6 +35,7 @@ class ChisBot(commands.Bot):
 
     async def on_ready(self):
         logging.info(f'Logged in as "{self.user}".')
+        logging.debug("DEBUG MESSAGES ARE WORKING")
 
 
 with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
