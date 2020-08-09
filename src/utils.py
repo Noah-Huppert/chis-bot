@@ -1,4 +1,6 @@
+import discord
 import datetime as dt
+from fuzzywuzzy import fuzz
 from dateutil.relativedelta import relativedelta
 
 BIRHDAY_RANGE_IN_DAYS = 45
@@ -23,3 +25,12 @@ def days_left(birthday: dt.datetime):
     date_range = propagated_birthday - current_date
 
     return date_range.days
+
+
+def closest_user(member_string, guild: discord.Guild):
+    if member_string.startswith('<@!') and member_string.endswith('>'):
+        return guild.get_member(int(member_string[3:-1]))
+    
+    return list(sorted(guild.members, key=lambda member: 
+                fuzz.partial_token_sort_ratio(member_string.lower(), 
+                member.display_name.lower())))[-1]

@@ -3,7 +3,7 @@ import discord
 import logging
 import sys
 import random
-from utils import A_EMOJI, emoji_list
+from utils import A_EMOJI, emoji_list, closest_user
 from data import data
 from fuzzywuzzy import fuzz
 from discord import Spotify
@@ -34,7 +34,7 @@ class simple(commands.Cog):
         channels = ctx.guild.text_channels
         message = '```\n'
         message += '\n'.join('{}. {}'.format(chr(k[0]), k[1])
-                                for k in enumerate(channels, start=A_EMOJI))
+                             for k in enumerate(channels, start=A_EMOJI))
         message += '```'
         message = await ctx.send(message)
         choice = await react_prompt_response(self.bot, ctx.author, message, reacts=emoji_list(len(channels)))
@@ -46,7 +46,7 @@ class simple(commands.Cog):
 
     @commands.command(name='hello', aliases=['hi'])
     async def hi_command(self, ctx):
-        """ Will send a friendly message back to you.
+        """ will say hi back.
         """
         logging.info(f'Said hello to {ctx.author.display_name}')
         await ctx.send('Sup, chad ;)')
@@ -63,70 +63,59 @@ class simple(commands.Cog):
         logging.info(f'{ctx.author} flipped a coin and got ' +
                      ('heads' if coin else f'tails'))
 
-    @commands.command(name='roll', aliases=['dice'])
-    async def roll_command(self, ctx, num: int):
+    @commands.command(name='roll', aliases=[])
+    async def roll_command(self, ctx, number: int):
         """ roll 'n' sided die
         """
-        roll = random.randint(0, num)
+        roll = random.randint(0, number)
         await ctx.send(f'Rolled: {roll}')
         logging.info(
-            f'{ctx.author.display_name} rolled a "{num}" sided die and got "{roll}"')
+            f'{ctx.author.display_name} rolled a "{number}" sided die and got "{roll}"')
 
-    @commands.command(name='user', aliases=[])
+    @commands.command(name='user', aliases=[], hidden=True)
     async def user_command(self, ctx, *args):
         """ fuzzy matches a discord user
         """
         logging.info(f'{ctx.author} tried to fuzzy match')
-        user_string = ' '.join(arg for arg in args[0:])
-        
-        best_rating = 0
-        best_member = None
-        for member in ctx.guild.members:
-            rating = fuzz.partial_token_sort_ratio(user_string.lower(), member.display_name.lower())
-            if rating > best_rating:
-                best_rating = rating
-                best_member = member
-        if best_member == None:
-            await ctx.send('No user found')
-            return 
-        await ctx.send(f'The closest user is {best_member.display_name}')
-        
+        member_string = ' '.join(arg for arg in args[0:])
+        # closest_user(member_string, ctx.guild.members)
+        await ctx.send(f'The closest user is {closest_user(member_string, ctx.guild)}')
 
     @commands.Cog.listener()
     async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
         guild = new_member.guild
         info = data(guild.id)
-        try:
-            channel = self.bot.get_channel(info.get_command('spam'))
-        except KeyError:
+        channel = self.bot.get_channel(info.get_command('spam'))
+
+        if channel is None:
             # message is annoying
             # logging.info(f'No channel to send "spam" command on {guild.name}')
             return
 
-        if new_member.activity:
-            user = new_member.display_name
-            activity = new_member.activity
+        # if new_member.activity:
+        #     user = new_member.display_name
+        #     activity = new_member.activity
 
-            if type(activity) is Spotify:
-                logging.info(f'{new_member} is listening to Spotify')
+        #     if type(activity) is Spotify:
+        #         logging.info(f'{new_member} is listening to Spotify')
 
-                if "Logic" in activity.artists:
-                    await channel.send(f"{user} is a real hiphop fan that listens to LOGIC! 🤢")
+        #         if "Logic" in activity.artists:
+        #             await channel.send(f"{user} is a real hiphop fan that listens to LOGIC! 🤢")
 
-                if "The Strokes" in activity.artists:
-                    await channel.send(f"{user} listens to The Strokes")
+        #         if "The Strokes" in activity.artists:
+        #             await channel.send(f"{user} listens to The Strokes")
 
-                if "Chance the Rapper" in activity.artists:
-                    await channel.send(f"{user} loves their wife")
+        #         if "Chance the Rapper" in activity.artists:
+        #             await channel.send(f"{user} loves their wife")
 
-                if "The National" in activity.artists:
-                    await channel.send(f"{user} might like https://www.youtube.com/watch?v=T8Xb_7YDroQ")
+        #         if "The National" in activity.artists:
+        #             await channel.send(f"{user} might like https://www.youtube.com/watch?v=T8Xb_7YDroQ")
 
-                if "Kanye West" in activity.artists:
-                    await channel.send(f"{user} wants this hot new merch https://www.youtube.com/watch?v=nxIvg0y6vCY")
+        #         if "Kanye West" in activity.artists:
+        #             await channel.send(f"{user} wants this hot new merch https://www.youtube.com/watch?v=nxIvg0y6vCY")
 
-                if "Drake" in activity.artists:
-                    await channel.send(f"{user} needs to read: https://aspe.hhs.gov/report/statutory-rape-guide-state-laws-and-reporting-requirements-summary-current-state-laws/sexual-intercourse-minors")
+        #         if "Drake" in activity.artists:
+        #             await channel.send(f"{user} needs to read: https://aspe.hhs.gov/report/statutory-rape-guide-state-laws-and-reporting-requirements-summary-current-state-laws/sexual-intercourse-minors")
 
         if new_member.display_name != old_member.display_name:
             await channel.send(f"{old_member.display_name} changed their nickname to {new_member.display_name}")

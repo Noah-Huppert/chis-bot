@@ -3,7 +3,7 @@ import discord
 import logging
 import random
 from data import data
-from utils import A_EMOJI, MAPS, emoji_list
+from utils import A_EMOJI, MAPS, emoji_list, closest_user
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
 
@@ -34,12 +34,13 @@ class game(commands.Cog):
 
     @commands.command(name='plan', aliases=['p'])
     async def plan_command(self, ctx, spots=5, *args):
-        """ takes a number of players and creates a new game.
+        """ takes a # of players, makes a new game
         """
         title = ""
         if len(args) > 0:
             title = ' '.join(arg for arg in args[0:])
 
+        await ctx.message.delete()
         game = data(ctx.guild.id)
         game.start(spots=spots, title=title)
         logging.info(
@@ -47,10 +48,12 @@ class game(commands.Cog):
         await self.update_message(ctx, self.print_message(game))
 
     @commands.command(name='add', aliases=['a', 'join'])
-    async def add_command(self, ctx, *args: discord.User):
-        """ @users to add them to the game.
+    async def add_command(self, ctx, *args):
+        """ @users to add them to the game
         """
+        await ctx.message.delete()
         game = data(ctx.guild.id)
+        args = list(map(lambda user: closest_user(user, ctx.guild), args))
         if len(args) == 0:
             args = [ctx.author]
 
@@ -66,10 +69,13 @@ class game(commands.Cog):
                 await ctx.send(f'Cannot add {user}, too many gamers.')
 
     @commands.command(name='del', aliases=['delete', 'd', 'remove', 'leave'])
-    async def remove_command(self, ctx, *args: discord.User):
+    async def remove_command(self, ctx, *args):
         """ @users to remove them from the game
         """
+        await ctx.message.delete()
         game = data(ctx.guild.id)
+        args = list(map(lambda user: closest_user(user, ctx.guild), args))
+
         if len(args) == 0:
             args = [ctx.author]
 
@@ -84,6 +90,7 @@ class game(commands.Cog):
     @commands.command(name='rename', aliases=[])
     async def rename_command(self, ctx, *args):
         """Renames the current game"""
+        await ctx.message.delete()
         game = data(ctx.guild.id)
         game.title = ""
         if len(args) > 0:
@@ -97,10 +104,11 @@ class game(commands.Cog):
     async def play_command(self, ctx):
         """ moves teams to respective voice channels
         """
-
         logging.info(f'{ctx.author} used the "play" command')
 
+        await ctx.message.delete()
         game = data(ctx.guild.id)
+
         if game.turn == None:
             await ctx.send("Teams have not been picked")
             return
@@ -132,13 +140,13 @@ class game(commands.Cog):
                 if ctx.guild.get_member(player).voice != None:
                     await ctx.guild.get_member(player).move_to(selected_channel)
 
-    @commands.command(name='move', aliases=['return', 'm'])
+    @commands.command(name='move', aliases=[])
     async def move_command(self, ctx):
         """ move gamers to a voice channel
         """
-
         logging.info(f'{ctx.author} used the move command ')
 
+        await ctx.message.delete()
         voice_channels = ctx.guild.voice_channels
         if len(voice_channels) == 0:
             await ctx.send("No voice channels to move players")
@@ -163,6 +171,7 @@ class game(commands.Cog):
         """
         logging.info(f'{ctx.author} printed the game message')
 
+        await ctx.message.delete()
         game = data(ctx.guild.id)
         await self.update_message(ctx, self.print_message(game))
 
@@ -171,6 +180,10 @@ class game(commands.Cog):
         """ @captains to start team selection
         """
         logging.info(f'{ctx.author} used "team" command')
+
+        await ctx.message.delete()
+        game = data(ctx.guild.id)
+        args = list(map(lambda user: closest_user(user, ctx.guild), args))
 
         if len(args) == 0:
             await ctx.send("Please enter team captains")
@@ -181,8 +194,6 @@ class game(commands.Cog):
         if len(set(args)) != len(args):
             await ctx.send("Captains must be different")
             return
-
-        game = data(ctx.guild.id)
 
         for cap in args:
             if cap.id not in game.gamers:
@@ -272,6 +283,7 @@ class game(commands.Cog):
         if ctx.guild.id in self.game_msg:
             await self.game_msg[ctx.guild.id].delete()
         self.game_msg[ctx.guild.id] = await ctx.send(message)
+
 
 def setup(bot):
     bot.add_cog(game(bot))

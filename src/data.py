@@ -164,7 +164,7 @@ class data():
         try:
             value = self.data['set'][command]
         except KeyError:
-            raise
+            return None
         return value
 
     def get_gamer(self, num):
