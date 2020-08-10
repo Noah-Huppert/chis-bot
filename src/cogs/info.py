@@ -19,6 +19,9 @@ class info(commands.Cog):
     async def birthday_command(self, ctx, user, *args):
         """ get/set @users birthday
         """
+        
+        logging.info(f'{ctx.author} tried to use the "birthday" command')
+        
         info = data(ctx.guild.id)
         user = closest_user(user, ctx.guild)
 
@@ -37,6 +40,7 @@ class info(commands.Cog):
             sorted_members = sorted(
                 members_with_no_bday, key=lambda user: days_left(info.get_birthday(user.id)))
 
+            # TODO print day instead of days on the day before birthday
             for member in sorted_members:
                 bday = info.get_birthday(member.id)
                 bday_days_left = days_left(bday)

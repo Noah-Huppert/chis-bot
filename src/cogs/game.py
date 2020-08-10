@@ -36,11 +36,12 @@ class game(commands.Cog):
     async def plan_command(self, ctx, spots=5, *args):
         """ takes a # of players, makes a new game
         """
+        await ctx.message.delete()
+        
         title = ""
         if len(args) > 0:
             title = ' '.join(arg for arg in args[0:])
 
-        await ctx.message.delete()
         game = data(ctx.guild.id)
         game.start(spots=spots, title=title)
         logging.info(
@@ -281,7 +282,11 @@ class game(commands.Cog):
 
     async def update_message(self, ctx, message):
         if ctx.guild.id in self.game_msg:
-            await self.game_msg[ctx.guild.id].delete()
+            try:
+                await self.game_msg[ctx.guild.id].delete()
+            except discord.errors.NotFound:
+                # user must have deleted the message
+                pass
         self.game_msg[ctx.guild.id] = await ctx.send(message)
 
 
