@@ -82,10 +82,10 @@ class game(commands.Cog):
         logging.info(f'{ctx.author} tried to remove {*args,} from the plan')
 
         for user in args:
-            if game.del_gamer(user):
-                await update_message(ctx, self.game_messages, self.game_message(game))
-            else:
+            if not game.del_gamer(user):
                 await ctx.send(f'{user} is not a gamer.')
+        await update_message(ctx, self.game_messages, self.game_message(game))
+
 
     @commands.command(name='rename', aliases=[])
     async def rename_command(self, ctx, *args):
