@@ -2,7 +2,7 @@ from discord.ext import tasks, commands
 import discord
 from data import data
 import datetime
-from utils import days_left, BIRHDAY_RANGE_IN_DAYS, closest_user
+from utils import closest_user, guild_birthdays_message, update_message
 from datetime import datetime as dt
 from dateutil import parser
 import logging
@@ -12,17 +12,17 @@ class info(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.info_msg = {}
+        self.bday_messages = {}
         self.notify_birthday.start()
 
-    # TODO dynamically change BIRTHDAY_RANGE_IN_DAYS
     @commands.command(name='birthday', aliases=['bday'])
     async def birthday_command(self, ctx, user, *args):
         """ get/set @users birthday
         """
-        
+
         logging.info(f'{ctx.author} tried to use the "birthday" command')
-        
-        info = data(ctx.guild.id)
+
+        info = data(ctx.guild)
         user = closest_user(user, ctx.guild)
 
         if user is None:
@@ -30,32 +30,15 @@ class info(commands.Cog):
             return
 
         if user == self.bot.user:
-            curr = datetime.datetime.now()
-            message = '⠀\n'  # blank unicode character
-            message += f'**🎊All Birthdays in the next {BIRHDAY_RANGE_IN_DAYS} days🎊**\n'
-            message += '```\n'
-
-            members_with_no_bday = filter(lambda user: info.get_birthday(
-                user.id) is not None, ctx.guild.members)
-            sorted_members = sorted(
-                members_with_no_bday, key=lambda user: days_left(info.get_birthday(user.id)))
-
-            # TODO print day instead of days on the day before birthday
-            for member in sorted_members:
-                bday = info.get_birthday(member.id)
-                bday_days_left = days_left(bday)
-                if bday_days_left <= BIRHDAY_RANGE_IN_DAYS:
-                    if bday.replace(year=curr.year) > curr:
-                        message += f'🔸 {member.display_name}:\n   turning {curr.year - bday.year} in {bday_days_left} days ({info.get_birthday(member.id).strftime("%B %d")}) \n\n'
-                    else:
-                        message += f'🔸 {member.display_name}:\n   turning {curr.year - bday.year + 1} in {bday_days_left} days ({info.get_birthday(member.id).strftime("%B %d")}) \n\n'
-            message += '```'
-            await ctx.send(message)
+            try:
+                await update_message(ctx, self.bday_messages, guild_birthdays_message(ctx.guild, next(iter(map(int, args)), None)))
+            except ValueError:
+                await ctx.send('Please give a valid day range (0 - 365)')
             return
 
         if len(args) == 0:
-            if info.get_birthday(user.id) is not None:
-                await ctx.send(f'{user.display_name}\'s birthday is `{info.get_birthday(user.id).strftime("%m/%d/%Y")}`')
+            if info.get_birthday(user) is not None:
+                await ctx.send(f'{user.display_name}\'s birthday is `{info.get_birthday(user).strftime("%m/%d/%Y")}`')
             else:
                 await ctx.send(f'Please set {user.display_name}\'s birthday')
             return
@@ -68,17 +51,17 @@ class info(commands.Cog):
             await ctx.send("Incorrect birthday format, try `month-day-year`")
             return
 
-        info.set_birthday(user.id, birthday)
+        info.set_birthday(user, birthday)
 
-        logging.info(f'{user} birthday is now {info.get_birthday(user.id)}')
-        await ctx.send(f'Set {user.display_name}\'s birthday to `{info.get_birthday(user.id).strftime("%m/%d/%Y")}`')
+        logging.info(f'{user} birthday is now {info.get_birthday(user)}')
+        await ctx.send(f'Set {user.display_name}\'s birthday to `{info.get_birthday(user).strftime("%m/%d/%Y")}`')
 
     @tasks.loop(hours=24)
     async def notify_birthday(self):
         current = dt.now()
 
         for guild in self.bot.guilds:
-            info = data(guild.id)
+            info = data(guild)
             channel = self.bot.get_channel(info.get_command('birthday'))
 
             if channel is None:
@@ -92,8 +75,8 @@ class info(commands.Cog):
                 # Notify channel that it is a users birthday
                 if birthday.month == current.month and birthday.day == current.day:
                     logging.info(
-                        f'It\'s {self.bot.get_user(user)}\'s birthday on {guild.name}!!')
-                    await channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{self.bot.get_user(user).id}> 🎉🎉🎉**')
+                        f'It\'s {user}\'s birthday on {guild.name}!!')
+                    await channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{user.id}> 🎉🎉🎉**')
 
     @notify_birthday.before_loop
     async def before_notify_birthday(self):

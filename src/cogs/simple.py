@@ -30,7 +30,7 @@ class simple(commands.Cog):
         if not await self.bot.is_owner(ctx.message.author):
             return
 
-        simple = data(ctx.guild.id)
+        simple = data(ctx.guild)
         channels = ctx.guild.text_channels
         message = '```\n'
         message += '\n'.join('{}. {}'.format(chr(k[0]), k[1])
@@ -84,7 +84,7 @@ class simple(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
         guild = new_member.guild
-        info = data(guild.id)
+        info = data(guild)
         channel = self.bot.get_channel(info.get_command('spam'))
 
         if channel is None:
@@ -119,6 +119,12 @@ class simple(commands.Cog):
 
         if new_member.display_name != old_member.display_name:
             await channel.send(f"{old_member.display_name} changed their nickname to {new_member.display_name}")
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        # for guild self.bot.guilds:
+        #     for channel in guild.text_channels:
+        pass
 
 
 def setup(bot):

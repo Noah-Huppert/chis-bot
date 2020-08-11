@@ -2,3 +2,8 @@ discord.py[voice]
 discord-eprompt
 python-dateutil
 fuzzywuzzy
+wallet-sdk
+requests
+voluptuous
+pyjwt
+twine
