@@ -6,11 +6,6 @@ from discord.ext import commands
 import json
 import os
 import sys
-import shutil
-import random
-from functools import reduce
-import re
-from enum import Enum
 import argparse
 import asyncio
 
@@ -18,12 +13,15 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger('root')
-log_handler = RotatingFileHandler(
+
+file_handler = RotatingFileHandler(
     'bot.log', maxBytes=1024*1024*5, backupCount=2)
-logging.basicConfig(level=logging.INFO, handlers=[
-                    log_handler, logging.StreamHandler()])
 
+logging.basicConfig(level=logging.INFO,
+                    handlers=[file_handler, logging.StreamHandler()],
+                    format="%(asctime)s %(levelname)s: [%(funcName)s] %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
 
+# TODO make stable version of bot (one for debugging and one for testing) regular uses $ and debug uses.
 class ChisBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,7 +37,7 @@ with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
     config = json.load(f)
     bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"])
 
-extensions = ['cogs.simple', 'cogs.game']
+extensions = ['cogs.simple', 'cogs.game', 'cogs.info']
 for ext in extensions:
     bot.load_extension(ext)
 
