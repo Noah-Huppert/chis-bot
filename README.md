@@ -35,25 +35,35 @@ See [config file](config-example.json).
 
 ## Usage
 
-```
-# bot commands
-game:
-  add    @users to add them to the game.
-  del    @users to remove them from the game
-  map    picks a Valorant map
-  move   move gamers to a voice channel
-  plan   takes a number of players and creates a new game.
-  play   moves teams to respective voice channels
-  rename Renames the current game
-  show   display current gamers
-  side   picks a side Attackers/Defenders
-  team   @captains to start team selection
-simple:
-  flip   flip a coin
-  hello  Will send a friendly message back to you.
-  roll   roll 'n' sided die
-  trans  The rat assumes their true identity.
-```
+
+### Creating a Plan
+
+![plan](https://i.imgur.com/aWKH89w.gif)
+
+### Add users to the game
+
+![add](https://i.imgur.com/0wkp11u.gif)
+
+### Delete users from the game
+
+![delete](https://i.imgur.com/ZDl7cuw.gif)
+
+### Start the team selection
+
+![team1](https://i.imgur.com/3xAfZVe.gif)
+
+### Selecting team members
+
+![team2](https://i.imgur.com/3WUbvAT.gif)
+
+### Picking the Map and Side
+
+![map](https://i.imgur.com/k7dalPJ.gif)
+![side](https://i.imgur.com/PmmiRVZ.gif)
+
+### Move teams to different voice channels
+
+![play](https://i.imgur.com/MATv1Io.gif)
 
 ## License
 
