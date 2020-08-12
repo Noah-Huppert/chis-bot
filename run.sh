@@ -1,2 +1,1 @@
-source env/bin/activate
-./src/bot.py
+pipenv run python ./src/bot.py

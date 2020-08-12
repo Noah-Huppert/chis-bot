@@ -1,4 +1,0 @@
-discord.py[voice]
-discord-eprompt
-python-dateutil
-fuzzywuzzy

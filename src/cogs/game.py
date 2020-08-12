@@ -274,7 +274,3 @@ class game(commands.Cog):
             message += f'Use `$play` to switch voice channels\n'
 
         return message
-
-
-def setup(bot):
-    bot.add_cog(game(bot))

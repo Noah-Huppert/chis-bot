@@ -1,5 +1,4 @@
 #!/usr/bin/env python3.8
-
 import discord
 from discord.ext import commands
 
@@ -8,6 +7,8 @@ import os
 import sys
 import argparse
 import asyncio
+
+from cogs import simple, info, game, wallet
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -36,9 +37,15 @@ with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
     config = json.load(f)
     bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"])
 
-extensions = ['cogs.simple', 'cogs.game', 'cogs.info', 'cogs.wallet']
-for ext in extensions:
-    bot.load_extension(ext)
+
+bot.add_cog(simple.simple(bot))
+bot.add_cog(info.info(bot))
+bot.add_cog(game.game(bot))
+
+if os.path.exists(os.path.dirname(__file__) + '/../rat-king.prod.client-config.json'):
+    bot.add_cog(wallet.wallet(bot))
+else:
+    logging.warn("Not wallet config found, wallet service not loaded")
 
 if not os.path.exists(os.path.dirname(__file__) + '/../config.json'):
     print('Token file not found. Place your Discord token ID in a file called `config.json`.', file=sys.stderr)
