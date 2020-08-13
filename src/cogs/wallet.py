@@ -12,9 +12,9 @@ class wallet(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.info_msg = {}
-        self.wallet_client = wallet_sdk.WalletClient.LoadFromConfig(os.path.dirname(__file__) + '/../../rat-king.prod.client-config.json')
+        self.wallet_client = wallet_sdk.WalletClient.LoadFromConfig(
+            os.path.dirname(__file__) + '/../../wallet-config.json')
         self.check_wallet_service.start()
-
 
     @commands.command(name='wallet', aliases=[])
     async def wallet_command(self, ctx):
@@ -30,7 +30,7 @@ class wallet(commands.Cog):
             logging.error(f"wallet service not healthy: {e}")
             for owner in self.bot.owner_ids:
                 await self.bot.get_user(owner).send("Wallet service is down")
-    
+
     @check_wallet_service.before_loop
     async def before_check_wallet_service(self):
         await self.bot.wait_until_ready()

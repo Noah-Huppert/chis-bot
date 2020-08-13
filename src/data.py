@@ -37,7 +37,7 @@ class data():
         self.data['captains'] = OrderedDict()
         self.data['turn'] = None
         # other data
-        self.data['info'] = {}  # dict of user_ids where value is dict
+        self.data['info'] = {}
         self.data['set'] = {}
         self.save()
 
@@ -171,7 +171,6 @@ class data():
     def get_gamer(self, num):
         self.load()
         return self.guild.get_member(self.data['gamers'][num])
-        # return self.data['gamers'][num]
 
     def get_agent(self, num):
         self.load()
@@ -191,7 +190,8 @@ class data():
 
     def add_player(self, captain, choice):
         self.load()
-        self.data['captains'][str(captain.id)].append(self.data['agents'][choice])
+        self.data['captains'][str(captain.id)].append(
+            self.data['agents'][choice])
         del self.data['agents'][choice]
         self.save()
 

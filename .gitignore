@@ -129,7 +129,6 @@ dmypy.json
 .pyre/
 
 # Discord Bot stuff
-token.txt
 src/data
 config.json
-*prod.client-config.json
+wallet-config.json
