@@ -8,18 +8,9 @@ Hopefully one day chis-bot will become something bigger. :)
 
 ## Installation
 
-### Setup a python virtual environment (optional)
-
 ``` bash
-python3.8 -m pip install virtualenv
-python3.8 -m virtualenv env
-source env/scripts/activate
-```
-
-### Install Requirements
-
-```
-pip install -r requirements.txt
+python3.8 -m pip install pipenv
+pipenv install
 ```
 
 ## Setup
@@ -35,35 +26,66 @@ See [config file](config-example.json).
 
 ## Usage
 
-
 ### Creating a Plan
 
-![plan](https://i.imgur.com/aWKH89w.gif)
+$[plan|p] [spots=5] [name=""]
+
+Takes in a number of players, makes a new game.
+
+<img src="https://i.imgur.com/aWKH89w.gif" alt="plan" height="250"/>
 
 ### Add users to the game
 
-![add](https://i.imgur.com/0wkp11u.gif)
+$[add|a|join] [users]
+
+Type a users name to add them to the game.
+
+<img src="https://i.imgur.com/0wkp11u.gif" alt="add" height="250"/>
+
 
 ### Delete users from the game
 
-![delete](https://i.imgur.com/ZDl7cuw.gif)
+$[del|delete|d|remove|leave] [users]
+
+Type a users name to delete them to the game.
+
+<img src="https://i.imgur.com/ZDl7cuw.gif" alt="delete" height="250"/>
 
 ### Start the team selection
 
-![team1](https://i.imgur.com/3xAfZVe.gif)
+$[team|t] [users]
+
+Type out a list of captains to start team selection.
+
+<img src="https://i.imgur.com/3xAfZVe.gif" alt="team1" height="250"/>
 
 ### Selecting team members
 
-![team2](https://i.imgur.com/3WUbvAT.gif)
+https://github.com/zacharied/discord-eprompt
 
-### Picking the Map and Side
+<img src="https://i.imgur.com/3WUbvAT.gif" alt="team2" height="250"/>
 
-![map](https://i.imgur.com/k7dalPJ.gif)
-![side](https://i.imgur.com/PmmiRVZ.gif)
+### Picking the Side
+
+$side 
+
+Randomly selects a side [Attackers/Defenders]
+
+<img src="https://i.imgur.com/PmmiRVZ.gif" alt="side" height="250"/>
+
+### Picking the Map
+
+$map 
+
+Randomly selects a Valorant map
+
+<img src="https://i.imgur.com/k7dalPJ.gif" alt="map" height="250"/>
 
 ### Move teams to different voice channels
 
-![play](https://i.imgur.com/MATv1Io.gif)
+https://github.com/zacharied/discord-eprompt
+
+<img src="https://i.imgur.com/MATv1Io.gif" alt="play" height="250"/>
 
 ## License
 

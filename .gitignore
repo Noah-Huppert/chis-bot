@@ -132,3 +132,4 @@ dmypy.json
 token.txt
 src/data
 config.json
+*prod.client-config.json

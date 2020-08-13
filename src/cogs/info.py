@@ -81,7 +81,3 @@ class info(commands.Cog):
     @notify_birthday.before_loop
     async def before_notify_birthday(self):
         await self.bot.wait_until_ready()
-
-
-def setup(bot):
-    bot.add_cog(info(bot))

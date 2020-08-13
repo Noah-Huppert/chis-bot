@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+"discord.py" = {extras = ["voice"], version = "*"}
+discord-eprompt = "*"
+python-dateutil = "*"
+fuzzywuzzy = "*"
+wallet-sdk-Noah-Huppert = "*"
+cryptography = "*"
+
+[requires]
+python_version = "3.8"

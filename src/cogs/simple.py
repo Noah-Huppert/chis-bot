@@ -126,6 +126,3 @@ class simple(commands.Cog):
         #     for channel in guild.text_channels:
         pass
 
-
-def setup(bot):
-    bot.add_cog(simple(bot))

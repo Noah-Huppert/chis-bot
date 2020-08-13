@@ -1,8 +1,5 @@
 {
     "token": "TOKEN HERE",
     "prefix": "$",
-    "owners": [],
-    "api_url": "",
-    "authority_id": "",
-    "private_key": ""
+    "owners": []
 }
