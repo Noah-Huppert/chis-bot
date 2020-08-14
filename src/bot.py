@@ -8,7 +8,7 @@ import sys
 import argparse
 import asyncio
 
-from cogs import simple, info, game, wallet
+from cogs import simple, info, match, wallet, game
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -40,6 +40,7 @@ with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
 
 bot.add_cog(simple.simple(bot))
 bot.add_cog(info.info(bot))
+bot.add_cog(match.match(bot))
 bot.add_cog(game.game(bot))
 
 if os.path.exists(os.path.dirname(__file__) + '/../rat-king.prod.client-config.json'):
