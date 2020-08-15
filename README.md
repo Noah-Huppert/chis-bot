@@ -20,7 +20,7 @@ See [config file](config-example.json).
 
 ## Run
 
-`./src/bot.py`
+`./run.sh`
 
 ## Usage
 

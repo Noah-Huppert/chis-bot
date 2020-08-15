@@ -46,7 +46,7 @@ bot.add_cog(game.game(bot))
 if os.path.exists(os.path.dirname(__file__) + '/../rat-king.prod.client-config.json'):
     bot.add_cog(wallet.wallet(bot))
 else:
-    logging.warn("Not wallet config found, wallet service not loaded")
+    logging.warning("Not wallet config found, wallet service not loaded")
 
 if not os.path.exists(os.path.dirname(__file__) + '/../config.json'):
     print('Token file not found. Place your Discord token ID in a file called `config.json`.', file=sys.stderr)

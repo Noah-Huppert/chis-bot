@@ -132,3 +132,4 @@ dmypy.json
 src/data
 config.json
 wallet-config.json
+.vscode/settings.json
