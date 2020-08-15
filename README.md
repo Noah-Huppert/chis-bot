@@ -5,16 +5,12 @@ A simple, "chis-bot".
 This bot was created to help a small group friends plan Valorant 10-mans.
 Hopefully one day chis-bot will become something bigger. :)
 
-------
-
 ## Installation
 
 ``` bash
 python3.8 -m pip install pipenv
 pipenv install
 ```
-
-------
 
 ## Setup
 
@@ -23,13 +19,9 @@ this will contain the bot token, prefix, and list of owners.
 
 See [config file](config-example.json).
 
-------
-
 ## Run
 
 `./run.sh`
-
-------
 
 ## Usage
 
@@ -122,8 +114,6 @@ Click on the voice channel to move all current player in the plan.
 </details>
 
 [Credit: Zacharied](<https://github.com/zacharied/discord-eprompt>)
-
-------
 
 ## License
 
