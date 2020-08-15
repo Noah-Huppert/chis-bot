@@ -14,5 +14,4 @@ class game(commands.Cog):
 
     @commands.command(name="blackjack")
     async def blackjack_command(self, ctx):
-        game = blackjack.Blackjack("test")
-        game.start()
+        blackjack.start()

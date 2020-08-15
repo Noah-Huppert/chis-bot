@@ -1,10 +1,26 @@
+
+
 # Chis Discord Bot
 
-A simple, "chis-bot".
+**Chis Bot** is a Discord bot that provides users with a simple interface to plan pick up Valorant games.
 
-This bot was created to help a small group friends plan Valorant 10-mans.
-Hopefully one day chis-bot will become something bigger. :)
+Once **Chis Bot** becomes verified on the [Riot Developer Portal](https://developer.riotgames.com/), the API's match statistics will aid in team selections.
 
+- [Chis Discord Bot](#chis-discord-bot)
+  - [Installation](#installation)
+  - [Setup](#setup)
+  - [Run](#run)
+  - [Usage](#usage)
+    - [Create a plan](#create-a-plan)
+    - [Add users to the plan](#add-users-to-the-plan)
+    - [Delete users from the plan](#delete-users-from-the-plan)
+    - [Start the team selection](#start-the-team-selection)
+      - [Select team members](#select-team-members)
+    - [Pick the Side](#pick-the-side)
+    - [Pick the Map](#pick-the-map)
+    - [Move teams to seperate voice channels](#move-teams-to-seperate-voice-channels)
+  - [License](#license)
+  
 ## Installation
 
 ``` bash
@@ -14,44 +30,51 @@ pipenv install
 
 ## Setup
 
-Make your own config.json file, 
-this will contain the bot token, prefix, and list of owners.
-
-See [config file](config-example.json).
+Create a [config.json](config-example.json) file. 
+This will contain the bot token, prefix, and list of owners.
 
 ## Run
 
-`./run.sh`
+[`./run.sh`](run.sh)
 
 ## Usage
 
-### Creating a Plan
+### Create a plan
 
-`$plan [spots=5] [name=""]`
+```bash
+$plan [spots=5] [name=""]
+#Only one plan can exist at a time
+```
 
-Takes in a number of players, makes a new game.
+Takes in a number of players, creates a new game.
 
 <details>
     <summary>Example</summary>
     <img src="https://i.imgur.com/aWKH89w.gif" alt="plan" height="350"/>
 </details>
 
-### Add users to the game
+### Add users to the plan
 
-`$add [users]`
+```bash
+$add [users]
+#Accepted types: @Name, Name, "Name With Spaces*
+```
 
-Type a users name to add them to the game.
+Add users by @tag or by typing the display name. If display name has spaces wrap in double quotes.
 
 <details>
     <summary>Example</summary>
     <img src="https://i.imgur.com/0wkp11u.gif" alt="add" height="350"/>
 </details>
 
-### Delete users from the game
+### Delete users from the plan
 
-`$delete [users]`
+```bash
+$delete [users]
+#Accepted types: @Name, Name, "Name With Spaces*
+```
 
-Type a users name to delete them to the game.
+Delete users by @tag or by typing the display name. If display name has spaces wrap in double quotes.
 
 <details>
     <summary>Example</summary>
@@ -60,9 +83,17 @@ Type a users name to delete them to the game.
 
 ### Start the team selection
 
-`$team [users]`
+```bash
+$team [users]
+#Accepted types: @Name, Name, "Name With Spaces"
+```
 
 Give a list of valid captains to start team selection.
+
+Notes:
+
+- More than two captains can be selected
+- Captains **must** be part of the plan
 
 <details>
     <summary>Example</summary>
@@ -71,16 +102,16 @@ Give a list of valid captains to start team selection.
 
 #### Select team members
 
-Click on the lettter corresponding to the player.
+ When prompted, captains must click on the letter corresponding to the player they want added to their roster.
 
 <details>
     <summary>Example</summary>
     <img src="https://i.imgur.com/3WUbvAT.gif" alt="team2" height="350"/>
 </details>
 
-[Credit: Zacharied](<https://github.com/zacharied/discord-eprompt>)
+*Please give support to [zacharied](https://github.com/zacharied) for the wonderful [Discord React-Prompt library](https://github.com/zacharied/discord-eprompt).*
 
-### Picking the Side
+### Pick the Side
 
 `$side`
 
@@ -91,7 +122,7 @@ Randomly selects a side [Attackers/Defenders].
     <img src="https://i.imgur.com/PmmiRVZ.gif" alt="side" height="350"/>
 </details>
 
-### Picking the Map
+### Pick the Map
 
 `$map`
 
@@ -102,18 +133,18 @@ Randomly selects a Valorant map.
     <img src="https://i.imgur.com/k7dalPJ.gif" alt="map" height="350"/>
 </details>
 
-### Move teams to different voice channels
+### Move teams to seperate voice channels
 
-`$move`
+`$play`
 
-Click on the voice channel to move all current player in the plan.
+When prompted, click on the letter corresponding to the correct voice channel to move each team.
 
 <details>
     <summary>Example</summary>
     <img src="https://i.imgur.com/MATv1Io.gif" alt="play" height="350"/>
 </details>
 
-[Credit: Zacharied](<https://github.com/zacharied/discord-eprompt>)
+*Please give support to [zacharied](https://github.com/zacharied) for the wonderful [Discord React-Prompt library](https://github.com/zacharied/discord-eprompt).*
 
 ## License
 
