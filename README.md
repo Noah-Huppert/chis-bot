@@ -114,6 +114,8 @@ Randomly selects a Valorant map
 
 `$move`
 
+Click on the voice channel to move all current player in the plan.
+
 <details>
     <summary>Example</summary>
     <img src="https://i.imgur.com/MATv1Io.gif" alt="play" height="350"/>
