@@ -92,7 +92,7 @@ Click on the lettter corresponding to the player.
 
 `$side`
 
-Randomly selects a side [Attackers/Defenders]
+Randomly selects a side [Attackers/Defenders].
 
 <details>
     <summary>Example</summary>
@@ -103,7 +103,7 @@ Randomly selects a side [Attackers/Defenders]
 
 `$map`
 
-Randomly selects a Valorant map
+Randomly selects a Valorant map.
 
 <details>
     <summary>Example</summary>
