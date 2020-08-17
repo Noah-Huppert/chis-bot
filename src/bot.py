@@ -15,11 +15,8 @@ from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger('root')
 
-file_handler = RotatingFileHandler(
-    'bot.log', maxBytes=1024*1024*5, backupCount=2)
-
 logging.basicConfig(level=logging.INFO,
-                    handlers=[file_handler, logging.StreamHandler()],
+                    handlers=[logging.StreamHandler()],
                     format="%(asctime)s %(levelname)s: [%(funcName)s] %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
 
 class ChisBot(commands.Bot):
