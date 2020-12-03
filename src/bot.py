@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.INFO,
                     handlers=[logging.StreamHandler()],
                     format="%(asctime)s %(levelname)s: [%(funcName)s] %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
 
+
 class ChisBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,7 +33,9 @@ class ChisBot(commands.Bot):
 
 with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
     config = json.load(f)
-    bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"])
+    # intents make everything
+    intents = discord.Intents.all()
+    bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"], intents=intents)
 
 
 bot.add_cog(simple.simple(bot))
