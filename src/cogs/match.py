@@ -261,8 +261,8 @@ class match(commands.Cog):
                 message += (f'{match.get_gamer(spot).display_name}')
             message += ('\n')
         message += '\n```'
-        message += '**Basic Commands**: `$add`, `$del`, `$team`, `$play`, `$help`\n'
-        message += '[For more info vist https://chis.dev/chis-bot]\n'
+        message += '**Basic Commands**: $add, $del, $team, $play, $help\n'
+        message += '[For more info visit https://chis.dev/chis-bot]\n'
 
         return message
 
