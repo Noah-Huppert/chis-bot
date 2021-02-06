@@ -6,7 +6,7 @@ from data import data
 
 DEFAULT_BIRHDAY_RANGE_IN_DAYS = 45
 A_EMOJI = 127462
-MAPS = ['Haven', 'Split', 'Ascent', 'Bind']
+MAPS = ['Haven', 'Split', 'Ascent', 'Bind', 'Icebox']
 
 
 def emoji_list(num):
