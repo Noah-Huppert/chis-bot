@@ -68,6 +68,30 @@ class match(commands.Cog):
                 await ctx.send(f'Cannot add {user}, too many gamers.')
         await update_message(ctx, self.match_messages, self.match_message(match))
 
+    @commands.command(name='addall', aliases=['aa'])
+    async def addall_command(self, ctx, *args):
+        """ Add all users in the voice channel
+        """
+        await ctx.message.delete()
+        voice_channels = ctx.guild.voice_channels
+        match = data(ctx.guild)
+
+        if ctx.author.voice is None:
+            await ctx.send(f'{ctx.author} is not in a voice channel.')
+            return
+
+
+        for channel in voice_channels:
+            if ctx.author.voice.channel != None and ctx.author.voice.channel is channel:
+                for user in channel.members:
+                    if match.people < match.spots:
+                        if not match.add_gamer(user):
+                            await ctx.send(f'{user} is already a gamer.')
+                    else:
+                        await ctx.send(f'Cannot add {user}, too many gamers.')
+        await update_message(ctx, self.match_messages, self.match_message(match))
+
+
     @commands.command(name='del', aliases=['delete', 'd', 'remove', 'leave'])
     async def remove_command(self, ctx, *args):
         """ @users to remove them from the match
@@ -237,7 +261,7 @@ class match(commands.Cog):
                 message += (f'{match.get_gamer(spot).display_name}')
             message += ('\n')
         message += '\n```'
-        message += '**Basic Commands**: plan, add, del, show, team, move '
+        message += '**Basic Commands**: `$add`, `$del`, `$team`, `$play`'
         message += '[`$help match` for more info]\n'
 
         return message

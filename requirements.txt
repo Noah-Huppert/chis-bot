@@ -1,0 +1,7 @@
+discord.py
+discord.py[voice]
+discord-eprompt
+python-dateutil
+fuzzywuzzy
+wallet-sdk-Noah-Huppert
+cryptography
