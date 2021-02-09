@@ -111,9 +111,10 @@ class match(commands.Cog):
         await update_message(ctx, self.match_messages, self.match_message(match))
 
 
-    @commands.command(name='rename', aliases=[])
+    @commands.command(name='rename', aliases=["r"])
     async def rename_command(self, ctx, *args):
         """Renames the current match"""
+        
         await ctx.message.delete()
         match = data(ctx.guild)
         match.title = ""
@@ -122,7 +123,7 @@ class match(commands.Cog):
 
         logging.info(f'{ctx.author} renamed the match to {match.title}')
 
-        await update_message(ctx, self.match_message, self.match_message(match))
+        await update_message(ctx, self.match_messages, self.match_message(match))
 
     # resize command?
 
