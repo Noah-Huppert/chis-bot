@@ -29,6 +29,18 @@ class ChisBot(commands.Bot):
 
     async def on_ready(self):
         logging.info(f'Logged in as "{self.user}".')
+        # Setting `Playing ` status
+        #await bot.change_presence(activity=discord.Game(name="$plan"))
+
+        # Setting `Streaming ` status
+        #await bot.change_presence(activity=discord.Streaming(name="$plan", url="my_twitch_url"))
+
+        # Setting `Listening ` status
+        #await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="a song"))
+
+        # Setting `Watching ` status
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" for $plan"))
+
 
 
 with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
