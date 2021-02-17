@@ -1,3 +1,4 @@
+from discord import activity
 from discord.ext import commands
 import discord
 import logging
@@ -67,6 +68,7 @@ class match(commands.Cog):
             else:
                 await ctx.send(f'Cannot add {user}, too many gamers.')
         await update_message(ctx, self.match_messages, self.match_message(match))
+    
 
     @commands.command(name='addall', aliases=['aa'])
     async def addall_command(self, ctx, *args):
@@ -80,10 +82,11 @@ class match(commands.Cog):
             await ctx.send(f'{ctx.author} is not in a voice channel.')
             return
 
-
         for channel in voice_channels:
             if ctx.author.voice.channel != None and ctx.author.voice.channel is channel:
-                for user in channel.members:
+                members= sorted(channel.members, key=lambda user: self.activity_check(user), reverse=True)
+                
+                for user in members:
                     if match.people < match.spots:
                         if not match.add_gamer(user):
                             await ctx.send(f'{user} is already a gamer.')
@@ -91,6 +94,14 @@ class match(commands.Cog):
                         await ctx.send(f'Cannot add {user}, too many gamers.')
         await update_message(ctx, self.match_messages, self.match_message(match))
 
+    def activity_check(self, user):
+        # logging.info(f'{user} activities are')
+        for activity in user.activities:
+            # logging.info(f'{activity}')
+            if isinstance(activity, discord.activity.Activity):
+                # Valorant application id
+                return activity.application_id == 700136079562375258
+        return False
 
     @commands.command(name='del', aliases=['delete', 'd', 'remove', 'leave'])
     async def remove_command(self, ctx, *args):
