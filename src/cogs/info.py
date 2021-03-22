@@ -15,6 +15,19 @@ class info(commands.Cog):
         self.bday_messages = {}
         self.notify_birthday.start()
 
+    @commands.command(name='embed', aliases=[])
+    async def embed_command(self, ctx):
+        embed=discord.Embed(title="TTT2 Tonight", description="", color=0xff00d4)
+        embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
+
+        embed.add_field(name="Gamers", value="1. <@219152343588012033> \n2. <@!106973822896320512> \n3. <@410992680873623552> \n4. <@!262798724428726282>", inline=False)
+        embed.add_field(name="Gamers", value=":regional_indicator_a: - <@219152343588012033> \n:regional_indicator_b: - <@!106973822896320512> \n:regional_indicator_c: - <@410992680873623552> \n:regional_indicator_d: - <@!262798724428726282>", inline=False)
+        
+        embed.add_field(name="<@219152343588012033> Team", value="1. <@219152343588012033> \n2. <@!106973822896320512> \n3. <@410992680873623552> \n4. <@!262798724428726282>", inline=False)
+
+        embed.set_footer(text="Basic Commands: $add, $addall, $del, $team, $play, $move")
+        await ctx.send(embed=embed)
+
     @commands.command(name='birthday', aliases=['bday'])
     async def birthday_command(self, ctx, user, *args):
         """ get/set @users birthday

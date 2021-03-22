@@ -1,4 +1,4 @@
-from discord import activity
+from discord import activity, message
 from discord.ext import commands
 import discord
 import logging
@@ -156,17 +156,21 @@ class match(commands.Cog):
         if len(match.captains) > len(voice_channels):
             await ctx.send("Not enough voice channels to move players")
             return
+            
 
         for i in range(len(match.captains)):
             captain = match.captains[i]
+            
+            embed = discord.Embed(title=f'**Move Team: {captain.display_name}**', description="", color=0xff00d4)
+            embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
 
-            message = '⠀\n'  # blank unicode character
-            message += f'**Move {captain.display_name}\'s team**'
-            message += '```\n'
-            message += '\n'.join('{}. {}'.format(chr(k[0]), k[1])
+            
+            channels = '\n'.join('{}. {}'.format(chr(k[0]), k[1])
                                  for k in enumerate(voice_channels, start=A_EMOJI))
-            message += '```'
-            message = await ctx.send(message)
+
+            embed.add_field(name="Current Voice Channels", value=channels, inline=False)        
+
+            message = await ctx.send(embed=embed)
 
             choice = await react_prompt_response(self.bot, ctx.author, message, reacts=emoji_list(len(voice_channels)))
             selected_channel = voice_channels[choice]
@@ -178,7 +182,7 @@ class match(commands.Cog):
                 if player.voice != None:
                     await player.move_to(selected_channel)
 
-    @commands.command(name='move', aliases=[])
+    @commands.command(name='move', aliases=["m"])
     async def move_command(self, ctx):
         """ move gamers to a voice channel
         """
@@ -190,11 +194,16 @@ class match(commands.Cog):
             await ctx.send("No voice channels to move players")
 
         match = data(ctx.guild)
-        message = '```\n'
-        message += '\n'.join('{}. {}'.format(chr(k[0]), k[1])
+
+        embed = discord.Embed(title=f'**Move All Users**', description="", color=0xff00d4)
+        embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
+    
+        channels = '\n'.join('{}. {}'.format(chr(k[0]), k[1])
                              for k in enumerate(voice_channels, start=A_EMOJI))
-        message += '```'
-        message = await ctx.send(message)
+
+        embed.add_field(name="Current Voice Channels", value=channels, inline=False)        
+
+        message = await ctx.send(embed=embed)
         choice = await react_prompt_response(self.bot, ctx.author, message, reacts=emoji_list(len(voice_channels)))
 
         voice = voice_channels[choice]
@@ -262,51 +271,56 @@ class match(commands.Cog):
             await update_message(ctx, self.match_messages, self.team_message(match))
 
     def match_message(self, match: data):
-        message = '⠀\n'  # blank unicode character
-        if match.title != "":
-            message += f'**{match.title} **\n'
-        message += f'**Gamers**\n'
-        message += '```\n'
-        for spot in range(match.spots):
-            message += f'{spot + 1}. '
-            if spot < match.people:
-                message += (f'{match.get_gamer(spot).display_name}')
-            message += ('\n')
-        message += '\n```'
-        message += '**Basic Commands**: $add, $del, $team, $play, $help\n'
-        message += '[For more info visit https://chis.dev/chis-bot]\n'
+        embed = discord.Embed(title=match.title, description="", color=0xff00d4)
+        embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
 
-        return message
+        gamers = ""
+        for spot in range(match.spots):
+            gamers += f'{spot + 1}. '
+            if spot < match.people:
+                gamers += match.get_gamer(spot).mention
+            gamers += '\n'
+
+        embed.add_field(name="Gamers", value=gamers, inline=False)        
+
+        embed.set_footer(text="Basic Commands: $add, $addall, $del, $team, $play, $move")
+
+        return embed
 
     def team_message(self, match: data):
-        message = '⠀\n'  # blank unicode character
         if match.picks != 0:
-            message += f'**Turn: {match.turn.display_name}**\n'
+            embed = discord.Embed(title=f'**Turn: {match.turn.display_name}**', description="", color=0xff00d4)
         else:
-            message += f'**Teams have been selected**\n'
+            embed = discord.Embed(title=f'**Teams have been selected**', description="", color=0xff00d4)
 
-        # Free
-        if match.picks != 0:
-            message += '```\n'
-            for spot in range(match.picks):
-                message += (f'{chr(spot + A_EMOJI)}. ')
-                if spot < match.picks:
-                    message += (f'{match.get_agent(spot).display_name}')
-                message += ('\n')
-            message += '```\n'
+        embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
 
         # Taken
         for cap in match.captains:
-            message += '```\n'
-            message += f'1. {cap.display_name} (captain)\n'
+            teammates = ''
+            teammates += '1. ' + cap.mention + ' (captain)\n'
             for spot in range(int(match.spots/len(match.captains)) - 1):
-                message += (f'{spot + 2}. ')
+                teammates += (f'{spot + 2}. ')
                 if spot < match.team_size(cap):
-                    message += (f'{match.get_player(cap, spot).display_name}')
-                message += ('\n')
-            message += '\n```'
-        if match.picks == 0:
-            message += f'**{match.turn.display_name} picked last**, they get priority picking sides.\n'
-            message += f'Use `$play` to switch voice channels\n'
+                    teammates += match.get_player(cap, spot).mention
+                teammates += ('\n')
 
-        return message
+            embed.add_field(name= f'Team: {cap.display_name}', value=teammates, inline=False)
+
+        # Free
+        if match.picks != 0:
+            not_selected =""
+            for spot in range(match.picks):
+                not_selected += f'{chr(spot + A_EMOJI)} - '
+                if spot < match.picks:
+                    not_selected += match.get_agent(spot).mention
+                not_selected += '\n'
+        
+            embed.add_field(name="Not Selected", value=not_selected, inline=False)
+
+        if match.picks == 0:
+            end_selection = '**' + match.turn.mention + f' picked last**, they get priority picking sides.\n'
+            end_selection += f'Use `$play` to switch voice channels'
+            embed.add_field(name= 'Get Ready', value=end_selection, inline=False)
+
+        return embed

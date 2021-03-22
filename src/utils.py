@@ -53,7 +53,7 @@ async def update_message(ctx, last_message: dict, message, mode='delete'):
             except discord.errors.NotFound:
                 pass  # user must have deleted the message
 
-    last_message[ctx.guild.id] = await ctx.send(message)
+    last_message[ctx.guild.id] = await ctx.send(embed=message)
 
 
 def guild_birthdays_message(guild: discord.Guild, birthday_range: int):
