@@ -3,8 +3,9 @@ from discord.ext import commands
 import discord
 import logging
 import random
+import math
 from data import data
-from utils import A_EMOJI, MAPS, emoji_list, closest_user, update_message
+from utils import A_EMOJI, MAPS, SKIP_EMOJI, emoji_list, closest_user, emoji_list_team, update_message
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
 
@@ -161,7 +162,7 @@ class match(commands.Cog):
         for i in range(len(match.captains)):
             captain = match.captains[i]
             
-            embed = discord.Embed(title=f'**Move Team: {captain.display_name}**', description="", color=0xff00d4)
+            embed = discord.Embed(title=f'**Move Team: {captain.display_name}**', description="[Click here to learn more.](https://chis.dev/chis-bot/#usage)", color=0xff00d4)
             embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
 
             
@@ -195,7 +196,7 @@ class match(commands.Cog):
 
         match = data(ctx.guild)
 
-        embed = discord.Embed(title=f'**Move All Users**', description="", color=0xff00d4)
+        embed = discord.Embed(title=f'**Move All Users**', description="[Click here to learn more.](https://chis.dev/chis-bot/#usage)", color=0xff00d4)
         embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
     
         channels = '\n'.join('{}. {}'.format(chr(k[0]), k[1])
@@ -255,23 +256,23 @@ class match(commands.Cog):
         match.turn = match.captains[0 % len(match.captains)]
         await update_message(ctx, self.match_messages, self.team_message(match))
 
-        for pick in range(match.picks):
+        while match.picks:
+            
             # get captain pick
-            match.turn = match.captains[pick % len(match.captains)]
+            choice = await react_prompt_response(self.bot, match.turn, self.match_messages[ctx.guild.id], reacts=emoji_list_team(match.picks + 1))
 
-            if match.picks != 1:
-                choice = await react_prompt_response(self.bot, match.turn, self.match_messages[ctx.guild.id], reacts=emoji_list(match.picks))
-            else:
-                choice = 0
             # add player to their team
-            match.add_player(match.turn, choice)
+            if choice != match.picks:
+                match.add_player(match.turn, choice)
 
             if match.picks != 0:
-                match.turn = match.captains[(pick - 1) % len(match.captains)]
+                # find the index of the current captain and add 1
+                
+                match.turn = match.captains[(match.captains.index(match.turn) - 1) % len(match.captains)]
             await update_message(ctx, self.match_messages, self.team_message(match))
 
     def match_message(self, match: data):
-        embed = discord.Embed(title=match.title, description="", color=0xff00d4)
+        embed = discord.Embed(title=match.title, description="[Click here to learn more.](https://chis.dev/chis-bot/#usage)", color=0xff00d4)
         embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
 
         gamers = ""
@@ -289,9 +290,9 @@ class match(commands.Cog):
 
     def team_message(self, match: data):
         if match.picks != 0:
-            embed = discord.Embed(title=f'**Turn: {match.turn.display_name}**', description="", color=0xff00d4)
+            embed = discord.Embed(title=f'**Turn: {match.turn.display_name}**', description="[Click here to learn more.](https://chis.dev/chis-bot/#usage)", color=0xff00d4)
         else:
-            embed = discord.Embed(title=f'**Teams have been selected**', description="", color=0xff00d4)
+            embed = discord.Embed(title=f'**Teams have been selected**', description="[Click here to learn more.](https://chis.dev/chis-bot/#usage)", color=0xff00d4)
 
         embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
 
@@ -299,7 +300,7 @@ class match(commands.Cog):
         for cap in match.captains:
             teammates = ''
             teammates += '1. ' + cap.mention + ' (captain)\n'
-            for spot in range(int(match.spots/len(match.captains)) - 1):
+            for spot in range(math.ceil(match.spots/len(match.captains)) - 1):
                 teammates += (f'{spot + 2}. ')
                 if spot < match.team_size(cap):
                     teammates += match.get_player(cap, spot).mention
@@ -313,8 +314,9 @@ class match(commands.Cog):
             for spot in range(match.picks):
                 not_selected += f'{chr(spot + A_EMOJI)} - '
                 if spot < match.picks:
-                    not_selected += match.get_agent(spot).mention
+                    not_selected += match.get_agent(spot).mention 
                 not_selected += '\n'
+            not_selected += f'{chr(SKIP_EMOJI)} - Skip Turn'
         
             embed.add_field(name="Not Selected", value=not_selected, inline=False)
 

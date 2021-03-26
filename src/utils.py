@@ -6,6 +6,7 @@ from data import data
 
 DEFAULT_BIRHDAY_RANGE_IN_DAYS = 45
 A_EMOJI = 127462
+SKIP_EMOJI = 9197
 MAPS = ['Haven', 'Split', 'Ascent', 'Bind', 'Icebox']
 
 
@@ -13,6 +14,15 @@ def emoji_list(num):
     emojis = {}
     for index in range(num):
         emojis[chr(index + A_EMOJI)] = index
+    return emojis
+
+def emoji_list_team(num):
+    emojis = {}
+    for index in range(num):
+        if index == num - 1:
+            emojis[chr(SKIP_EMOJI)] = index
+        else:
+            emojis[chr(index + A_EMOJI)] = index
     return emojis
 
 
