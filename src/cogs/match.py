@@ -58,6 +58,19 @@ class match(commands.Cog):
         match = data(ctx.guild)
         prefix = await self.bot.get_prefix(ctx.message)
 
+        if not len(args) and not spots:
+            embed = discord.Embed(title=f'', description="", color=0xff00d4)
+            embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/",
+                             icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
+            embed.add_field(
+                name="Usage", value='$plan[p] <#> <title>', inline=False)
+            embed.add_field(
+                name="Examples", value='$plan 5\n$plan 10 VALORANT Match\n$p 15 Garry\'s Mod', inline=False)
+            embed.set_footer(text=f'Type {prefix}help for more details.')
+
+            await ctx.send(embed=embed)
+            return
+
         try:
             interval = datetime.now() - match.time
             # 15 min for now
@@ -77,19 +90,6 @@ class match(commands.Cog):
                     return
         except KeyError:
             pass
-
-        if not len(args) and not spots:
-            embed = discord.Embed(title=f'', description="", color=0xff00d4)
-            embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/",
-                             icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
-            embed.add_field(
-                name="Usage", value='$plan[p] <#> <title>', inline=False)
-            embed.add_field(
-                name="Examples", value='$plan 5\n$plan 10 VALORANT Match\n$p 15 Garry\'s Mod', inline=False)
-            embed.set_footer(text=f'Type {prefix}help for more details.')
-
-            await ctx.send(embed=embed)
-            return
 
         await ctx.message.delete()
 
@@ -422,7 +422,7 @@ class match(commands.Cog):
         prefix = await self.bot.get_prefix(ctx.message)
 
         embed.add_field(name="Basic Commands:",
-                        value=f'{prefix}add, {prefix}delete, {prefix}move, {prefix}rename\n**Use `$team` to start captain selection.**', inline=False)
+                        value=f'{prefix}add, {prefix}delete, {prefix}move, {prefix}rename\n**`$team` to start captain selection**', inline=False)
         embed.set_footer(text=f'Type {prefix}help for more details.')
 
         return embed
