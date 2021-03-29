@@ -31,6 +31,7 @@ class data():
     def init(self):
         # game data
         self.data['title'] = ""
+        self.data['time'] = datetime.now()
         self.data['spots'] = DEFAULT_GAME_SIZE
         self.data['gamers'] = []
         self.data['agents'] = []
@@ -44,6 +45,7 @@ class data():
     def start(self, *args, **kwargs):
         self.load()
         self.data['title'] = kwargs.get('title', "")
+        self.data['time'] = datetime.isoformat(datetime.now())
         self.data['spots'] = kwargs.get('spots', DEFAULT_GAME_SIZE)
         self.data['gamers'] = []
         self.data['agents'] = []
@@ -63,9 +65,14 @@ class data():
         self.save()
 
     @property
+    def time(self):
+        self.load()
+        return datetime.fromisoformat(self.data['time'])
+
+    @property
     def spots(self):
         self.load()
-        return self.data['spots']
+        return int(self.data['spots'])
 
     @property
     def people(self):

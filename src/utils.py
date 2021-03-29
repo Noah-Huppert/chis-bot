@@ -7,6 +7,7 @@ from data import data
 DEFAULT_BIRHDAY_RANGE_IN_DAYS = 45
 A_EMOJI = 127462
 SKIP_EMOJI = 9197
+YES_NO_SHOW = {'👍': 1, '👎': 0, '🔎': 2}
 MAPS = ['Haven', 'Split', 'Ascent', 'Bind', 'Icebox']
 
 
@@ -15,6 +16,7 @@ def emoji_list(num):
     for index in range(num):
         emojis[chr(index + A_EMOJI)] = index
     return emojis
+
 
 def emoji_list_team(num):
     emojis = {}
@@ -76,25 +78,29 @@ def guild_birthdays_message(guild: discord.Guild, birthday_range: int):
 
     info = data(guild)
     curr = dt.datetime.now()
-    message = '⠀\n'  # blank unicode character
-    message += f'**🎊All Birthdays '
+
+    message_header = f'**🎊All Birthdays '
     if birthday_range != 365:
-        message += f'in the next {birthday_range} days🎊**\n'
+        message_header += f'in the next {birthday_range} days🎊**\n'
     else:
-        message += f'on the server🎊**\n'
-    message += '```\n'
+        message_header += f'on the server🎊**\n'
+
+    embed = discord.Embed(title=message_header, description="", color=0xff00d4)
+    embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/",
+                     icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
 
     members_with_no_bday = filter(lambda user: info.get_birthday(
         user) is not None, guild.members)
     sorted_members = sorted(
         members_with_no_bday, key=lambda user: days_left(info.get_birthday(user)))
 
+    message = ""
     for member in sorted_members:
         bday = info.get_birthday(member)
         bday_days_left = days_left(bday)
         if bday_days_left <= birthday_range:
 
-            message += f'🔸 {member.display_name}:\n   turning '
+            message += f'🔸 {member.mention}:\n   Turning '
 
             # account for yearly wrap around
             if bday.replace(year=curr.year) > curr:
@@ -106,8 +112,8 @@ def guild_birthdays_message(guild: discord.Guild, birthday_range: int):
                 message += f' tomorrow!! ({info.get_birthday(member).strftime("%B %d")}) \n\n'
             else:
                 # +1 because in birthday terms, less than a day is still a day. (there are no '0' days)
-                message += f' in {bday_days_left + 1} days ({info.get_birthday(member).strftime("%B %d")}) \n\n'
+                message += f' in {bday_days_left + 1} days ({info.get_birthday(member).strftime("%B %d")}) \n'
+    embed.add_field(
+        name="People", value=message, inline=False)
 
-    message += '```'
-
-    return message
+    return embed

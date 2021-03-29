@@ -70,31 +70,29 @@ class info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name='birthday', aliases=['bday'])
-    async def birthday_command(self, ctx, user, *args):
+    async def birthday_command(self, ctx, user=None, *args):
         """ get/set @users birthday
 
         $birthday[bday] <@Name, Name, “Name With Spaces”> <Date>
 
-        Example: 
+        Example:
         Setting a birthday: $bday chis 7/29/98
         Checking a birthday: $bday chis
+        Checking muliple birthdays: $bday
         """
 
         logging.info(f'{ctx.author} tried to use the "birthday" command')
 
         info = data(ctx.guild)
-        user = closest_user(user, ctx.guild)
 
         if user is None:
-            await ctx.send('User not found')
-            return
-
-        if user == self.bot.user:
             try:
                 await update_message(ctx, self.bday_messages, guild_birthdays_message(ctx.guild, next(iter(map(int, args)), None)))
             except ValueError:
                 await ctx.send('Please give a valid day range (0 - 365)')
             return
+
+        user = closest_user(user, ctx.guild)
 
         if len(args) == 0:
             if info.get_birthday(user) is not None:

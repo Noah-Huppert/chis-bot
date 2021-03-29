@@ -5,7 +5,9 @@ import logging
 import random
 import math
 from data import data
-from utils import A_EMOJI, MAPS, SKIP_EMOJI, emoji_list, closest_user, emoji_list_team, update_message
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
+from utils import A_EMOJI, MAPS, SKIP_EMOJI, YES_NO_SHOW, YES_NO_SHOW, emoji_list, closest_user, emoji_list_team, update_message
 from discord_eprompt import ReactPromptPreset, react_prompt_response
 
 
@@ -43,7 +45,7 @@ class match(commands.Cog):
         await ctx.send(picked_map)
 
     @commands.command(name='plan', aliases=['p'])
-    async def plan_command(self, ctx, spots=5, *args):
+    async def plan_command(self, ctx, spots=None, *args):
         """ creates a plan, takes in # of gamers, and title (optional) 
 
         `$plan[p] <#> <title>`
@@ -53,8 +55,30 @@ class match(commands.Cog):
         $p 15 Garry's Mod
         """
         # Add plan check
+        match = data(ctx.guild)
+        prefix = await self.bot.get_prefix(ctx.message)
 
-        if not len(args):
+        try:
+            interval = datetime.now() - match.time
+            # 15 min for now
+            if interval.seconds < 900:
+                embed = discord.Embed(
+                    title=f'Current Plan Recently Created', description="Would you like to start a new one?", color=0xff00d4)
+                embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/",
+                                 icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
+                embed.set_footer(
+                    text=f'🔎 to view current plan.')
+                message = await ctx.send(embed=embed)
+                choice = await react_prompt_response(self.bot, ctx.author, message, reacts=YES_NO_SHOW)
+                if choice == 0:
+                    return
+                if choice == 2:
+                    await self.print_command(ctx)
+                    return
+        except KeyError:
+            pass
+
+        if not len(args) and not spots:
             embed = discord.Embed(title=f'', description="", color=0xff00d4)
             embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/",
                              icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
@@ -62,6 +86,8 @@ class match(commands.Cog):
                 name="Usage", value='$plan[p] <#> <title>', inline=False)
             embed.add_field(
                 name="Examples", value='$plan 5\n$plan 10 VALORANT Match\n$p 15 Garry\'s Mod', inline=False)
+            embed.set_footer(text=f'Type {prefix}help for more details.')
+
             await ctx.send(embed=embed)
             return
 
@@ -71,7 +97,6 @@ class match(commands.Cog):
         if len(args) > 0:
             title = ' '.join(arg for arg in args[0:])
 
-        match = data(ctx.guild)
         match.start(spots=spots, title=title)
         logging.info(
             f'{ctx.author} is planning a {spots} player match called "{title}"')
