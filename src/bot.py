@@ -47,8 +47,7 @@ with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
     config = json.load(f)
     # intents make everything
     intents = discord.Intents.all()
-    bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"], intents=intents)
-
+    bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"], intents=intents, help_command=None)
 
 bot.add_cog(simple.simple(bot))
 bot.add_cog(info.info(bot))

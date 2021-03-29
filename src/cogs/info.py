@@ -15,22 +15,69 @@ class info(commands.Cog):
         self.bday_messages = {}
         self.notify_birthday.start()
 
-    @commands.command(name='embed', aliases=[])
-    async def embed_command(self, ctx):
-        embed=discord.Embed(title="TTT2 Tonight", description="", color=0xff00d4)
-        embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/", icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
+    @commands.command(name='help', aliases=["h"])
+    async def help_command(self, ctx, args=None):
+        """returns descriptive information about bot commands
 
-        embed.add_field(name="Gamers", value="1. <@219152343588012033> \n2. <@!106973822896320512> \n3. <@410992680873623552> \n4. <@!262798724428726282>", inline=False)
-        embed.add_field(name="Gamers", value=":regional_indicator_a: - <@219152343588012033> \n:regional_indicator_b: - <@!106973822896320512> \n:regional_indicator_c: - <@410992680873623552> \n:regional_indicator_d: - <@!262798724428726282>", inline=False)
-        
-        embed.add_field(name="<@219152343588012033> Team", value="1. <@219152343588012033> \n2. <@!106973822896320512> \n3. <@410992680873623552> \n4. <@!262798724428726282>", inline=False)
+        `$help[h] <command>`
 
-        embed.set_footer(text="Basic Commands: $add, $addall, $del, $team, $play, $move")
+        Example: 
+        $help plan
+        """
+
+        command_list = [x for x in self.bot.commands]
+        prefix = await self.bot.get_prefix(ctx.message)
+
+        # If there are no arguments, just list the commands:
+        if not args:
+            embed = discord.Embed(
+                title="", description="[Click here to learn more.](https://chis.dev/chis-bot/#usage)", color=0xff00d4)
+
+            embed.add_field(
+                name="Bot prefix:",
+                value=prefix,
+                inline=False
+            )
+
+            embed.add_field(
+                name="List of supported commands:",
+                value="\n".join(["**" + x.name + "**" + " - " + x.help.split("\n")[0] for i, x in enumerate(
+                    filter(lambda x: x.cog_name == "match", self.bot.commands))]),
+                inline=False
+            )
+
+            embed.set_footer(
+                text=f'Type {prefix}help <command name> for a more info on a specific command.')
+
+        # If the argument is a command, get the help text from that command:
+        elif args in [x.name for x in command_list]:
+            embed = discord.Embed(title=args.title(
+            ) + " Command", description=self.bot.get_command(args).help, color=0xff00d4)
+
+        # If someone is just trolling:
+        else:
+            embed = discord.Embed(
+                title="Oh no!", description="", color=0xff00d4)
+
+            embed.add_field(
+                name="An Unfortunate Error Occurred.",
+                value=f'`{args}` must not exist.'
+            )
+
+        embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/",
+                         icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
+
         await ctx.send(embed=embed)
 
     @commands.command(name='birthday', aliases=['bday'])
     async def birthday_command(self, ctx, user, *args):
         """ get/set @users birthday
+
+        $birthday[bday] <@Name, Name, “Name With Spaces”> <Date>
+
+        Example: 
+        Setting a birthday: $bday chis 7/29/98
+        Checking a birthday: $bday chis
         """
 
         logging.info(f'{ctx.author} tried to use the "birthday" command')
