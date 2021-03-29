@@ -131,7 +131,7 @@ class match(commands.Cog):
 
     @commands.command(name='addall', aliases=['aa'])
     async def addall_command(self, ctx, *args):
-        """ add all users currently in the voice channel
+        """ add all users currently in the voice channel to the plan
 
         `$addall[aa]`
 
@@ -361,7 +361,7 @@ class match(commands.Cog):
                                     value=embed_captains, inline=False)
 
                 message = await ctx.send(embed=embed)
-                choice = await react_prompt_response(self.bot, ctx.author, message, reacts=emoji_list_team(match.people + 1))
+                choice = await react_prompt_response(self.bot, ctx.author, message, reacts=emoji_list_team(len(gamers) + 1))
 
                 if choice != match.people:
                     captains.append(gamers.pop(choice))
