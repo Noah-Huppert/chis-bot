@@ -5,3 +5,4 @@ python-dateutil
 fuzzywuzzy
 wallet-sdk-Noah-Huppert
 cryptography
+discord-py-slash-command

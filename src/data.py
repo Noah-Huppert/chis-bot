@@ -31,7 +31,7 @@ class data():
     def init(self):
         # game data
         self.data['title'] = ""
-        self.data['time'] = datetime.now()
+        self.data['time'] = datetime.isoformat(datetime.now())
         self.data['spots'] = DEFAULT_GAME_SIZE
         self.data['gamers'] = []
         self.data['agents'] = []

@@ -1,8 +1,11 @@
+from os import name
+from typing import List
 from discord.ext import commands
 import discord
 import logging
 import sys
 import random
+
 from utils import A_EMOJI, emoji_list, closest_user
 from data import data
 from fuzzywuzzy import fuzz
@@ -13,7 +16,7 @@ from discord_eprompt import ReactPromptPreset, react_prompt_response
 class simple(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
+    
     @commands.command(name='kill', aliases=['k'], hidden=True)
     async def kill_command(self, ctx):
         """ kill the bot [owner-only]
@@ -104,33 +107,33 @@ class simple(commands.Cog):
             # logging.info(f'No channel to send "spam" command on {guild.name}')
             return
 
-        # if new_member.activity:
-        #     user = new_member.display_name
-        #     activity = new_member.activity
+        if new_member.activity:
+            user = new_member.display_name
+            activity = new_member.activity
 
-        #     if type(activity) is Spotify:
-        #         logging.info(f'{new_member} is listening to Spotify')
+            if type(activity) is Spotify:
+                logging.info(f'{new_member} is listening to Spotify')
 
-        #         if "Logic" in activity.artists:
-        #             await channel.send(f"{user} is a real hiphop fan that listens to LOGIC! 🤢")
+                # if "Logic" in activity.artists:
+                #     await channel.send(f"{user} is a real hiphop fan that listens to LOGIC! 🤢")
 
-        #         if "The Strokes" in activity.artists:
-        #             await channel.send(f"{user} listens to The Strokes")
+                # if "The Strokes" in activity.artists:
+                #     await channel.send(f"{user} listens to The Strokes")
 
-        #         if "Chance the Rapper" in activity.artists:
-        #             await channel.send(f"{user} loves their wife")
+                # if "Chance the Rapper" in activity.artists:
+                #     await channel.send(f"{user} loves their wife")
 
-        #         if "The National" in activity.artists:
-        #             await channel.send(f"{user} might like https://www.youtube.com/watch?v=T8Xb_7YDroQ")
+                # if "The National" in activity.artists:
+                #     await channel.send(f"{user} might like https://www.youtube.com/watch?v=T8Xb_7YDroQ")
 
-        #         if "Kanye West" in activity.artists:
-        #             await channel.send(f"{user} wants this hot new merch https://www.youtube.com/watch?v=nxIvg0y6vCY")
+                # if "Kanye West" in activity.artists:
+                #     await channel.send(f"{user} wants this hot new merch https://www.youtube.com/watch?v=nxIvg0y6vCY")
 
-        #         if "Drake" in activity.artists:
-        #             await channel.send(f"{user} needs to read: https://aspe.hhs.gov/report/statutory-rape-guide-state-laws-and-reporting-requirements-summary-current-state-laws/sexual-intercourse-minors")
+                # if "Drake" in activity.artists:
+                #     await channel.send(f"{user} needs to read: https://aspe.hhs.gov/report/statutory-rape-guide-state-laws-and-reporting-requirements-summary-current-state-laws/sexual-intercourse-minors")
 
         if new_member.display_name != old_member.display_name:
-            await channel.send(f"{old_member.display_name} changed their nickname to {new_member.display_name}")
+            await channel.send(f"{old_member.display_name} nickname was changed to {new_member.display_name}")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

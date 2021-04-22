@@ -1,6 +1,8 @@
 #!/usr/bin/env python3.8
 import discord
 from discord.ext import commands
+from discord_slash import SlashCommand # Importing the newly installed library.
+
 
 import json
 import os
@@ -8,7 +10,7 @@ import sys
 import argparse
 import asyncio
 
-from cogs import simple, info, match, wallet, game
+from cogs import simple, info, match, wallet, game, slash_match
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -39,20 +41,28 @@ class ChisBot(commands.Bot):
         #await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="a song"))
 
         # Setting `Watching ` status
-        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" for $plan"))
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" for /plan"))
+
+
+        
 
 
 
 with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
     config = json.load(f)
     # intents make everything
-    intents = discord.Intents.all()
-    bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"], intents=intents, help_command=None)
+    bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"], intents=discord.Intents.all(), help_command=None)
+    slash = SlashCommand(bot, sync_commands=True)
+
 
 bot.add_cog(simple.simple(bot))
 bot.add_cog(info.info(bot))
-bot.add_cog(match.match(bot))
+#bot.add_cog(match.match(bot))
 bot.add_cog(game.game(bot))
+
+# Testing
+bot.add_cog(slash_match.match(bot))
+
 
 if os.path.exists(os.path.dirname(__file__) + '/../rat-king.prod.client-config.json'):
     bot.add_cog(wallet.wallet(bot))
