@@ -1,6 +1,5 @@
 from discord.ext import tasks, commands
 import discord
-from cogs.slash_match import TEST_GUILD
 from data import data
 import datetime
 from utils import closest_user, guild_birthdays_message, update_message

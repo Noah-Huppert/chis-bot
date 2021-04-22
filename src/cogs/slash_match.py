@@ -94,15 +94,7 @@ class match(commands.Cog):
         await update_message(ctx, self.match_messages, await self.match_message(ctx, match))
 
     @cog_ext.cog_slash(name="addall",
-                       description="Add yourself to plan, or specify gamer.",
-                       options=[
-                           create_option(
-                               name="addall",
-                               description="add all users currently in the voice channel to the plan",
-                               option_type=SlashCommandOptionType.STRING,
-                               required=False,
-                           ),
-                       ])
+                       description="Add all gamers in the current voice chat.")
     async def addall_command(self, ctx):
         """ add all users currently in the voice channel to the plan
         """
@@ -136,7 +128,7 @@ class match(commands.Cog):
         return False
 
     @cog_ext.cog_slash(name="delete",
-                       description="Delete yourself to plan, or specify a gamer.",
+                       description="Delete yourself from plan, or specify a gamer.",
                        options=[
                            create_option(
                                name="user",
@@ -259,7 +251,7 @@ class match(commands.Cog):
                     await player.move_to(selected_channel)
 
     @cog_ext.cog_slash(name="move",
-                       description="Move plan members to a voice channel."
+                       description="Move gamers to a voice channel."
                        )
     async def move_command(self, ctx):
         """ move plan members to a voice channel
