@@ -1,22 +1,23 @@
-from os import name
-from typing import List
-from discord.ext import commands
-import discord
 import logging
-import sys
 import random
 import subprocess
 import sys
+from os import name
+from typing import List
 
-from utils import A_EMOJI, emoji_list, closest_user
+import discord
 from data import data
-from fuzzywuzzy import fuzz
 from discord import Spotify
+from discord.ext import commands
+from discord.ext.commands import Context
 from discord_eprompt import ReactPromptPreset, react_prompt_response
-from discord_slash.model import SlashCommandOptionType, SlashCommandPermissionType
-from discord_slash.utils.manage_commands import create_choice, create_option, create_permission
-from discord_slash import cog_ext, SlashContext
-
+from discord_slash import SlashContext, cog_ext
+from discord_slash.model import (SlashCommandOptionType,
+                                 SlashCommandPermissionType)
+from discord_slash.utils.manage_commands import (create_choice, create_option,
+                                                 create_permission)
+from fuzzywuzzy import fuzz
+from utils import A_EMOJI, closest_user, emoji_list
 
 SERVICES = [
     create_choice(
@@ -74,23 +75,23 @@ class simple(commands.Cog):
             title=f'Chis Server', description='', color=0xff00d4)
         embed.set_author(name="Chis Bot", url="https://chis.dev/chis-bot/",
                          icon_url="https://cdn.discordapp.com/app-icons/724657775652634795/22a8bc7ffce4587048cb74b41d2a7363.png?size=256")
-        
+
         if state == 'status':
             if command.returncode == 3:
                 embed.add_field(name=f'{state}',
-                        value=f'{service} is stopped.', inline=False)
+                                value=f'{service} is stopped.', inline=False)
             if command.returncode == 0:
                 embed.add_field(name=f'{state}',
-                        value=f'{service} is running.', inline=False)
-        
+                                value=f'{service} is running.', inline=False)
+
         if state == 'start':
             embed.add_field(name=f'{state}',
-                    value=f'{service} is being started.', inline=False)
+                            value=f'{service} is being started.', inline=False)
 
         if state == 'stop':
             embed.add_field(name=f'{state}',
-                    value=f'{service} is stopped.', inline=False)
-                
+                            value=f'{service} is stopped.', inline=False)
+
         await ctx.send(embed=embed)
 
     @commands.command(name='kill', aliases=['k'], hidden=True)
@@ -103,14 +104,16 @@ class simple(commands.Cog):
         await ctx.send('Weakling')
 
     @commands.command(name='inv', aliases=[])
-    async def inv_command(self, ctx, hidden=True):
+    async def inv_command(self, ctx: Context, hidden=True):
+        if ctx.author.id != 219152343588012033:
+            return
         for guild in self.bot.guilds:
             invite = await guild.text_channels[0].create_invite(max_uses=1, unique=True)
             if ctx.author.id == 219152343588012033:
                 await ctx.author.send(invite)
 
     @commands.command(name='set', aliases=[], hidden=True)
-    async def set_command(self, ctx, type='spam', channel=None):
+    async def set_command(self, ctx: Context, type='spam', channel_id: int = None, channel=None):
         """ set channel message spam [owner-only]
 
         `$set <command>`
@@ -122,19 +125,19 @@ class simple(commands.Cog):
         if not await self.bot.is_owner(ctx.message.author):
             return
 
+        if channel_id == None:
+            await ctx.send("Please specify channel id.")
+
         simple = data(ctx.guild)
         channels = ctx.guild.text_channels
-        message = '```\n'
-        message += '\n'.join('{}. {}'.format(chr(k[0]), k[1])
-                             for k in enumerate(channels, start=A_EMOJI))
-        message += '```'
-        message = await ctx.send(message)
-        choice = await react_prompt_response(self.bot, ctx.author, message, reacts=emoji_list(len(channels)))
 
         if type == 'spam':
-            simple.set_command('spam', channels[choice].id)
+            simple.set_command('spam', channel_id)
+
         if type == 'birthday' or type == 'bday':
-            simple.set_command('birthday', channels[choice].id)
+            simple.set_command('birthday', channel_id)
+
+        await ctx.send(f"{type} channel has been set to {self.bot.get_channel(channel_id)}")
 
     @commands.command(name='hello', aliases=['hi'])
     async def hi_command(self, ctx):
@@ -181,7 +184,7 @@ class simple(commands.Cog):
 
         if channel is None:
             # message is annoying
-            # logging.info(f'No channel to send "spam" command on {guild.name}')
+            logging.info(f'No channel to send "spam" command on {guild.name}')
             return
 
         if new_member.activity:
@@ -209,8 +212,8 @@ class simple(commands.Cog):
                 # if "Drake" in activity.artists:
                 #     await channel.send(f"{user} needs to read: https://aspe.hhs.gov/report/statutory-rape-guide-state-laws-and-reporting-requirements-summary-current-state-laws/sexual-intercourse-minors")
 
-        if new_member.display_name != old_member.display_name:
-            await channel.send(f"{old_member.display_name} nickname was changed to {new_member.display_name}")
+        # if new_member.display_name != old_member.display_name:
+        #     await channel.send(f"{old_member.display_name} nickname was changed to {new_member.display_name}")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

@@ -6,6 +6,7 @@ from utils import closest_user, guild_birthdays_message, update_message
 from datetime import datetime as dt
 from dateutil import parser
 import logging
+import asyncio
 from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_choice, create_option
 from discord_slash.model import SlashCommandOptionType
@@ -85,3 +86,11 @@ class info(commands.Cog):
     @notify_birthday.before_loop
     async def before_notify_birthday(self):
         await self.bot.wait_until_ready()
+        now = dt.now()
+        next_day_noon = now.replace(hour=12,
+            minute=0, second=0, microsecond=0) + datetime.timedelta(days=1)
+
+        offset = next_day_noon - now
+
+        logging.debug("sleeping for " + str(offset.total_seconds()))
+        await asyncio.sleep(offset.total_seconds())

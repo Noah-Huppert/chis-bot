@@ -10,7 +10,7 @@ import sys
 import argparse
 import asyncio
 
-from cogs import simple, info, match, wallet, game, slash_match
+from cogs import simple, info, match, wallet, slash_match
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -58,7 +58,6 @@ with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
 bot.add_cog(simple.simple(bot))
 bot.add_cog(info.info(bot))
 #bot.add_cog(match.match(bot))
-bot.add_cog(game.game(bot))
 
 # Testing
 bot.add_cog(slash_match.match(bot))
