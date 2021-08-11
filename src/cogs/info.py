@@ -67,9 +67,10 @@ class info(commands.Cog):
 
         for guild in self.bot.guilds:
             info = data(guild)
-            channel = self.bot.get_channel(info.get_command('birthday'))
+            birthday_channel = self.bot.get_channel(info.get_command('birthday'))
+            irl_birthday_channel = self.bot.get_channel(info.get_command('birthday_irl'))
 
-            if channel is None:
+            if birthday_channel is None:
                 logging.info(
                     f'No channel to send "bday" command on {guild.name}')
                 return
@@ -81,7 +82,11 @@ class info(commands.Cog):
                 if birthday.month == current.month and birthday.day == current.day:
                     logging.info(
                         f'It\'s {user}\'s birthday on {guild.name}!!')
-                    await channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{user.id}> 🎉🎉🎉**')
+                    for role in user.roles:
+                        if role.id == info.get_command('irl_role'):
+                            await irl_birthday_channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{user.id}> 🎉🎉🎉**')
+                            return
+                    await birthday_channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{user.id}> 🎉🎉🎉**')
 
     @notify_birthday.before_loop
     async def before_notify_birthday(self):
