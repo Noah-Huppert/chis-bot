@@ -92,10 +92,17 @@ class info(commands.Cog):
     async def before_notify_birthday(self):
         await self.bot.wait_until_ready()
         now = dt.now()
-        next_day_noon = now.replace(hour=12,
-            minute=0, second=0, microsecond=0) + datetime.timedelta(days=1)
 
-        offset = next_day_noon - now
+        today_noon = now.replace(hour=12,
+            minute=0, second=0, microsecond=0)
+
+        offset = today_noon - now
+
+        if offset.total_seconds() < 0:
+            next_day_noon = now.replace(hour=12,
+                minute=0, second=0, microsecond=0) + datetime.timedelta(days=1)
+            
+            offset = next_day_noon - now
 
         logging.debug("sleeping for " + str(offset.total_seconds()))
         await asyncio.sleep(offset.total_seconds())
