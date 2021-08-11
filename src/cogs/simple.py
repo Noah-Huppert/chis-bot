@@ -6,8 +6,9 @@ from os import name
 from typing import List
 
 import discord
+from discord import channel
 from data import data
-from discord import Spotify
+from discord import Spotify, TextChannel, Role
 from discord.ext import commands
 from discord.ext.commands import Context
 from discord_eprompt import ReactPromptPreset, react_prompt_response
@@ -112,32 +113,75 @@ class simple(commands.Cog):
             if ctx.author.id == 219152343588012033:
                 await ctx.author.send(invite)
 
-    @commands.command(name='set', aliases=[], hidden=True)
-    async def set_command(self, ctx: Context, type='spam', channel_id: int = None, channel=None):
-        """ set channel message spam [owner-only]
+    @cog_ext.cog_slash(name="set",
+                       description="Set message channels.",
+                       options=[
+                           create_option(
+                               name="type",
+                               description="Choose message type.",
+                               option_type=SlashCommandOptionType.STRING,
+                               required=True,
+                               choices=[
+                                   create_choice(
+                                    name="Spam Channel",
+                                    value="Spam"
+                                   ),
+                                   create_choice(
+                                       name="Birthday Channel",
+                                       value="Birthday"
+                                   ),
+                                   create_choice(
+                                       name="IRL Birthday Channel",
+                                       value="IRL Birthday"
+                                   ),
+                                   create_choice(
+                                       name="IRL Birthday Role",
+                                       value="IRL Role"
+                                   )
+                               ]
+                           ),
+                           create_option(
+                               name="channel",
+                               description="Choose output channel.",
+                               option_type=SlashCommandOptionType.CHANNEL,
+                               required=False,
+                           ),
+                           create_option(
+                               name="role",
+                               description="Choose output role.",
+                               option_type=SlashCommandOptionType.ROLE,
+                               required=False,
+                           )
+                       ]
+                       )
+    async def set_command(self, ctx: Context, type, channel: TextChannel = None, role: Role = None):
+        simple = data(ctx.guild)
 
-        `$set <command>`
-
-        Example: 
-        $set bday
-        $set spam
-        """
-        if not await self.bot.is_owner(ctx.message.author):
+        if type == "IRL Role":
+            if not isinstance(role, Role):
+                await ctx.send("Invalid command usage.")
+                return
+            simple.set_command('irl_role', role.id)
+            await ctx.send(f"{type} channel has been set to `{role}`.")
             return
 
-        if channel_id == None:
-            await ctx.send("Please specify channel id.")
+        if not isinstance(channel, TextChannel):
+            await ctx.send("Invalid command usage.")
+            return
 
-        simple = data(ctx.guild)
-        channels = ctx.guild.text_channels
+        if type != "IRL Role" and role != None:
+            await ctx.send("Invalid command usage.")
 
-        if type == 'spam':
-            simple.set_command('spam', channel_id)
+        if type == 'Spam':
+            simple.set_command('spam', channel.id)
 
-        if type == 'birthday' or type == 'bday':
-            simple.set_command('birthday', channel_id)
+        if type == 'Birthday' or type == 'bday':
+            simple.set_command('birthday', channel.id)
 
-        await ctx.send(f"{type} channel has been set to {self.bot.get_channel(channel_id)}")
+        if type == 'IRL Birthday' or type == 'bday':
+            simple.set_command('birthday_irl', channel.id)
+
+        await ctx.send(f"{type} channel has been set to `{channel}`.")
 
     @commands.command(name='hello', aliases=['hi'])
     async def hi_command(self, ctx):
