@@ -1,26 +1,23 @@
-#!/usr/bin/env python3.8
-import discord
-from discord.ext import commands
-from discord_slash import SlashCommand # Importing the newly installed library.
-
-
-import json
-import os
-import sys
 import argparse
 import asyncio
-
-from cogs import simple, info, match, wallet, slash_match
-
+import json
 import logging
-from logging.handlers import RotatingFileHandler
+import os
+import sys
 
-logger = logging.getLogger('root')
+import discord
+from discord.ext import commands
+from discord_slash import SlashCommand
+
+from cogs import info, match, simple, slash_match, wallet
+
+file_handler = logging.FileHandler('chis-bot.log')
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.INFO)
 
 logging.basicConfig(level=logging.INFO,
-                    handlers=[logging.StreamHandler()],
+                    handlers=[file_handler, console_handler],
                     format="%(asctime)s %(levelname)s: [%(funcName)s] %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
-
 
 class ChisBot(commands.Bot):
     def __init__(self, *args, **kwargs):
