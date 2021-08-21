@@ -82,11 +82,14 @@ class info(commands.Cog):
                 if birthday.month == current.month and birthday.day == current.day:
                     logging.info(
                         f'It\'s {user}\'s birthday on {guild.name}!!')
+                    irl = False
                     for role in user.roles:
                         if role.id == info.get_command('irl_role'):
-                            await irl_birthday_channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{user.id}> 🎉🎉🎉**')
-                            return
-                    await birthday_channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{user.id}> 🎉🎉🎉**')
+                            irl = True
+                    if irl:
+                        await irl_birthday_channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{user.id}> 🎉🎉🎉**')
+                    else:
+                        await birthday_channel.send(f'⠀\n**🎉🎉🎉 Happy Birthday <@!{user.id}> 🎉🎉🎉**')
 
     @notify_birthday.before_loop
     async def before_notify_birthday(self):
