@@ -1,0 +1,12 @@
+FROM python:3.8
+
+RUN adduser chis-bot
+
+RUN mkdir -p /home/chis-bot/run
+WORKDIR /home/chis-bot/run
+USER chis-bot
+
+ENV PATH="$PATH:/home/chis-bot/.local/bin/"
+RUN pip install pipenv
+
+ENTRYPOINT [ "/home/chis-bot/run/dev.sh" ]
