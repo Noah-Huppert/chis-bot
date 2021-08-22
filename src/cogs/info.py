@@ -11,6 +11,9 @@ from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_choice, create_option
 from discord_slash.model import SlashCommandOptionType
 
+""" The hour of day at which birthday notifications will be sent out.
+"""
+BIRTHDAY_NOTIFY_HOUR = 8
 
 class info(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -61,7 +64,7 @@ class info(commands.Cog):
         logging.info(f'{user} birthday is now {info.get_birthday(user)}')
         await ctx.send(f'Set {user.display_name}\'s birthday to `{info.get_birthday(user).strftime("%m/%d/%Y")}`')
 
-    @tasks.loop(hours=24)
+    @tasks.loop(hours=1)
     async def notify_birthday(self):
         current = dt.now()
 
@@ -79,7 +82,7 @@ class info(commands.Cog):
                 birthday = info.get_birthday(user)
 
                 # Notify channel that it is a users birthday
-                if birthday.month == current.month and birthday.day == current.day:
+                if birthday.month == current.month and birthday.day == current.day and current.hour == BIRTHDAY_NOTIFY_HOUR:
                     logging.info(
                         f'It\'s {user}\'s birthday on {guild.name}!!')
                     irl = False
@@ -96,16 +99,16 @@ class info(commands.Cog):
         await self.bot.wait_until_ready()
         now = dt.now()
 
-        today_noon = now.replace(hour=12,
+        today_top_of_hour = now.replace(hour=BIRTHDAY_NOTIFY_HOUR,
             minute=0, second=0, microsecond=0)
 
-        offset = today_noon - now
+        offset = today_top_of_hour - now
 
         if offset.total_seconds() < 0:
-            next_day_noon = now.replace(hour=12,
+            next_day_top_of_hour = now.replace(hour=BIRTHDAY_NOTIFY_HOUR,
                 minute=0, second=0, microsecond=0) + datetime.timedelta(days=1)
             
-            offset = next_day_noon - now
+            offset = next_day_top_of_hour - now
 
-        logging.debug("sleeping for " + str(offset.total_seconds()))
+        logging.debug(f"sleeping for {str(offset.total_seconds())} so birthday notification is sent at the top of the hour")
         await asyncio.sleep(offset.total_seconds())
