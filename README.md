@@ -15,8 +15,8 @@ A Discord bot that provides users with a simple interface to plan pick up Valora
    2.1. Create a new application on the [Discord Developer Portal](https://discord.com/developers/applications)  
    2.2. Create a Bot for your application, make note of this value for the config file  
    2.3. Authenticate your bot with Discord servers you want it to operate within using the OAuth2 page  
-      2.3.1. Select the Scopes: `bot`, `applications.commands`  
-	  2.3.2. Select bot Bot Permissions:  
+      - Select the Scopes: `bot`, `applications.commands`  
+	  - Select bot Bot Permissions:  
 	     - General Permissions: `Manage Channels`, `View Channels`  
 		 - Text Permissions: `Send Messages`, `Public Threads`, `Embed Links`, `Add Reactions`, `Use Slash Commands`  
 		 - Voice Permissions: `Move Members`  
