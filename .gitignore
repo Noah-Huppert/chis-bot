@@ -133,3 +133,6 @@ src/data
 config.json
 wallet-config.json
 .vscode/settings.json
+
+# dev.sh flag file
+.Pipenv.installed
