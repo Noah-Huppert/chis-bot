@@ -20,6 +20,10 @@ from discord_slash.utils.manage_commands import (create_choice, create_option,
 from fuzzywuzzy import fuzz
 from utils import A_EMOJI, closest_user, emoji_list
 
+from ..config import load_config
+
+config = load_config()
+
 SERVICES = [
     create_choice(
         name="Minecraft",
@@ -29,10 +33,11 @@ SERVICES = [
 
 
 class simple(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot:
         self.bot = bot
 
     @cog_ext.cog_slash(name="server",
+                       guild_ids=config.guilds,
                        description="Start a Chis Bot service",
                        options=[
                            create_option(

@@ -11,6 +11,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand
 
 from cogs import info, match, simple, slash_match, wallet
+from config import load_config
 
 file_handler = logging.FileHandler('chis-bot.log')
 console_handler = logging.StreamHandler(sys.stdout)
@@ -41,24 +42,18 @@ class ChisBot(commands.Bot):
         # Setting `Watching ` status
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" for /plan"))
 
+config = load_config()
 
-        
+# intents make everything
+bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"], intents=discord.Intents.all(), help_command=None)
+slash = SlashCommand(bot, sync_commands=True)
 
-
-
-with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
-    config = json.load(f)
-    # intents make everything
-    bot = ChisBot(command_prefix=config["prefix"], owner_ids=config["owners"], intents=discord.Intents.all(), help_command=None)
-    slash = SlashCommand(bot, sync_commands=True)
-
-
-bot.add_cog(simple.simple(bot))
-bot.add_cog(info.info(bot))
+bot.add_cog(simple.simple(bot, config["guilds"]))
+bot.add_cog(info.info(bot, config["guilds"]))
 #bot.add_cog(match.match(bot))
 
 # Testing
-bot.add_cog(slash_match.match(bot))
+bot.add_cog(slash_match.match(bot, config["guilds"]))
 
 
 if os.path.exists(os.path.dirname(__file__) + '/../rat-king.prod.client-config.json'):
@@ -66,10 +61,4 @@ if os.path.exists(os.path.dirname(__file__) + '/../rat-king.prod.client-config.j
 else:
     logging.warning("Not wallet config found, wallet service not loaded")
 
-if not os.path.exists(os.path.dirname(__file__) + '/../config.json'):
-    print('Token file not found. Place your Discord token ID in a file called `config.json`.', file=sys.stderr)
-    sys.exit(1)
-
-with open(os.path.dirname(__file__) + '/../config.json', 'r') as f:
-    config = json.load(f)
-    bot.run(config["token"])
+bot.run(config["token"])

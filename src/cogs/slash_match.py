@@ -13,6 +13,9 @@ from discord_slash import cog_ext, SlashContext
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_choice, create_option
 
+from ..config import load_config
+
+config = load_config()
 
 class match(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -20,6 +23,7 @@ class match(commands.Cog):
         self.match_messages = {}
 
     @cog_ext.cog_slash(name="plan",
+                       guild_ids=config.guilds,
                        description="Gather people to play video games.",
                        options=[
                            create_option(

@@ -5,3 +5,4 @@ services:
       dockerfile: ./Dockerfile.dev
     volumes:
       - "./:/home/chis-bot/run/"
+    restart: always

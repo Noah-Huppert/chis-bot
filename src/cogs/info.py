@@ -1,3 +1,4 @@
+from typing import List
 from discord.ext import tasks, commands
 import discord
 from data import data
@@ -11,6 +12,10 @@ from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_choice, create_option
 from discord_slash.model import SlashCommandOptionType
 
+from ..config import load_config
+
+config = load_config()
+
 """ The hour of day at which birthday notifications will be sent out.
 """
 BIRTHDAY_NOTIFY_HOUR = 8
@@ -23,6 +28,7 @@ class info(commands.Cog):
         self.notify_birthday.start()
 
     @cog_ext.cog_slash(name="birthday",
+                       guild_ids=config.guilds,
                        description="Get/set a user's birthday.",
                        options=[
                            create_option(

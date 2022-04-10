@@ -14,6 +14,7 @@ class data():
     def __init__(self, guild: discord.Guild):
         self.guild = guild
         self.data = {}
+        print(f"CHECK_EXITS PATH IS '{os.path.exists(os.path.dirname(__file__) + f'/data/{self.guild.id}.json')}")
         if os.path.exists(os.path.dirname(__file__) + f'/data/{self.guild.id}.json'):
             self.load()
         else:
